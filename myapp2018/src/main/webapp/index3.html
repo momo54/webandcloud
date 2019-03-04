@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>First App Mythrill</title>
+</head>
+<body>
+
+
+
+	<script src="https://unpkg.com/mithril/mithril.js"></script>
+	<script>	
+
+var Score = {
+	    list: [],
+	    loadList: function() {
+	        return m.request({
+	            method: "GET",
+	            url: "https://sobike44.appspot.com/_ah/api/myApi/v1/entity/titi"
+	        })
+	        .then(function(result) {
+	            Score.list = result.items
+	        	console.log("got:",result.items)
+	        })
+	    },
+	}
+
+var ScoreView = {
+		oninit: Score.loadList,
+	    view: function() {
+	        return m(".user-list", Score.list.map(function(item) {
+	            return m(".user-list-item", item.properties.name + " " + item.properties.score)
+	        }))
+	    },
+		
+}
+
+var count = 0;
+
+var Hello = {
+	    view: function() {
+	    	return m("main", [
+	            m("h1", {class: "title"}, "My first app Mythill"),
+	            m("div", {id: "box"}, m(ScoreView)),
+	            m("button", {onclick: function() {count++}}, count + " clicks"),
+	        ])
+	    }
+	}
+
+m.mount(document.body, Hello)	
+
+
+</script>
+</body>
+</html>
