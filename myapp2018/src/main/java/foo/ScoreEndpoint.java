@@ -29,7 +29,18 @@ namespace = @ApiNamespace(ownerDomain = "helloworld.example.com",
 
 public class ScoreEndpoint {
 	
-	
+
+	@ApiMethod(name = "listAllScore")
+	public List<Entity> listAllScoreEntity() {
+			Query q =
+			    new Query("Score");
+
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			PreparedQuery pq = datastore.prepare(q);
+			List<Entity> result = pq.asList(FetchOptions.Builder.withDefaults());
+			return result;
+	}
+
 
 	@ApiMethod(name = "listScore")
 	public List<Entity> listScoreEntity(@Named("name") String name) {
