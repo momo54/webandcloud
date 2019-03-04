@@ -21,8 +21,21 @@ var Score = {
 	        .then(function(result) {
 	            Score.list = result.items
 	        	console.log("got:",result.items)
+	        	m.redraw(true) // force
 	        })
 	    },
+	    current: {},
+	    save: function() {
+	    	console.log("saving...",Score.current)
+	        return m.request({
+	            method: "POST",
+	            url: "https://sobike44.appspot.com/_ah/api/myApi/v1/addScore/"+Score.current.score+"/"+Score.current.name
+	        })
+	        .then(function(result) {
+	        	console.log("got:",result)
+	        	Score.loadList()
+	        })
+	    }
 	}
 
 var ScoreView = {
@@ -40,12 +53,37 @@ var count = 0;
 var Hello = {
 	    view: function() {
 	    	return m("main", [
-	            m("h1", {class: "title"}, "My first app Mythill"),
+	            m("h1", {class: "title"}, "My second app Mythill tagada"),
 	            m("div", {id: "box"}, m(ScoreView)),
+	            m("div", {id: "form"}, m(Form)),
 	            m("button", {onclick: function() {count++}}, count + " clicks"),
 	        ])
 	    }
 	}
+
+
+var Form = {
+		view: function() {
+	        return m("form", {
+	                onsubmit: function(e) {
+	                    e.preventDefault()
+	                    Score.save()
+	                }
+	            }, [
+	            m("label.label", "score"),
+	            m("input.input[type=int][placeholder=score]",{
+	                oninput: function (e) {Score.current.score=e.target.value},
+	                value: Score.current.score
+	            }),
+	            m("label.label", "name"),
+	            m("input.input[type=text][placeholder=name]", {
+	                oninput: function (e) {Score.current.name=e.target.value},
+	                value: Score.current.name
+	            }),
+	            m("button.button[type=submit]", "Save"),
+	        ])
+	    }
+}
 
 m.mount(document.body, Hello)	
 
