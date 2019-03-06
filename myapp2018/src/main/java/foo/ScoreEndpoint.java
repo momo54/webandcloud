@@ -2,6 +2,7 @@ package foo;
 
 
 import java.util.List;
+import java.util.Random;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
@@ -29,7 +30,14 @@ namespace = @ApiNamespace(ownerDomain = "helloworld.example.com",
 
 public class ScoreEndpoint {
 	
+	Random r=new Random();
 
+	@ApiMethod(name = "getRandom")
+	public RandomResult random() {
+			return new RandomResult(r.nextInt(6)+1);
+	}
+
+	
 	@ApiMethod(name = "listAllScore")
 	public List<Entity> listAllScoreEntity() {
 			Query q =
