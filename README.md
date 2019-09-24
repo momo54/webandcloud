@@ -3,8 +3,7 @@
 # Install
 
 * Add gcloud in your path:
-* * export PATH=$PATH:~/.cache/google-cloud-tools-java/managed-cloud-sdk/LATEST/google-cloud-sdk/bin/
-* * Or cp ~molli-p/.bashrc ~ and source ~/.bashrc
+* * run /media/Enseignant/google-cloud-sdk/install.sh 
 * gcloud config set account yourname
 * gcloud auth login
 * gcloud config set project yourproject
