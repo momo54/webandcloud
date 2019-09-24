@@ -10,12 +10,12 @@
 *    gcloud config set project yourproject
 
 ## Install and Run
-* git clone https://github.com/momo54/DiceGAE.git
-* cd DiceGAE
+* git clone https://github.com/momo54/webandcloud.git
+* cd webandcloud/myapp2018/
 * mvn appengine:deploy
 * gcloud app browse
 
 
-# use
+# Access API
 
 https://yourapp.appstpot.com/_ah/api/explorer
