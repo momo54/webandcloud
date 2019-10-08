@@ -20,16 +20,29 @@ molli-p@remote:~/.m2$ cat settings.xml
 
 ## import and run in eclipse
 * install the code in your home:
- * cd ~; git clone https://github.com/momo54/webandcloud.git
+```
+ cd ~
+ git clone https://github.com/momo54/webandcloud.git
+ mvn install
+```
 * start an eclipse with gcloud plugin
- * can be in  /media/Enseignant/eclipse/eclipse
- * otherwise in ~molli-p/eclipse/eclipse
+```
+ /media/Enseignant/eclipse/eclipse
+ or ~molli-p/eclipse/eclipse
+ ```
 * import the maven project in eclipse
  * File/import/maven/existing maven project
  * browse to ~/webandcloud/myapp2018
  * select pom.xml
  * Finish and wait
  * Ready to deploy and run...
+ ```
+ gcloud app create error...
+ ```
+ Go to google cloud shell console (icon near your head in google console)
+ ```
+ gcloud app create
+ ```
 
 ## Running from the command line with GCloud SDK
 *    Add gcloud in your path:
