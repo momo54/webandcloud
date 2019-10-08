@@ -22,7 +22,8 @@ molli-p@remote:~/.m2$ cat settings.xml
 * install the code in your home:
  * cd ~; git clone https://github.com/momo54/webandcloud.git
 * start an eclipse with gcloud plugin
- * molli-p@remote:~$ /media/Enseignant/eclipse/eclipse
+ * can be in  /media/Enseignant/eclipse/eclipse
+ * otherwise in ~molli-p/eclipse/eclipse
 * import the maven project in eclipse
  * File/import/maven/existing maven project
  * browse to ~/webandcloud/myapp2018
