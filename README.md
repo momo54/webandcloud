@@ -1,6 +1,6 @@
 # webandcloud
 
-Be sure you maven has access to the web
+**Be sure your maven has access to the web**
 * you should have file ~/.m2/settings.xml
 * otherwise cp ~molli-p/.m2/settings.xml ~/.m2/
 
