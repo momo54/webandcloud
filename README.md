@@ -20,19 +20,19 @@ molli-p@remote:~/.m2$ cat settings.xml
 
 ## import and run in eclpse
 * install the code in your home:
-** cd ~; git clone https://github.com/momo54/webandcloud.git
+..* cd ~; git clone https://github.com/momo54/webandcloud.git
 * start an eclipse with gcloud plugin
-** molli-p@remote:~$ /media/Enseignant/eclipse/eclipse
+..* molli-p@remote:~$ /media/Enseignant/eclipse/eclipse
 * import the maven project in eclipse
-** File/import/maven/existing maven project
-** browse to ~/webandcloud/myapp2018
-** select pom.xml
-** Finish and wait
-** Ready to deploy and run...
+..* File/import/maven/existing maven project
+..* browse to ~/webandcloud/myapp2018
+..* select pom.xml
+..* Finish and wait
+..* Ready to deploy and run...
 
 ## Running from the command line with GCloud SDK
 *    Add gcloud in your path:
-**       run /media/Enseignant/google-cloud-sdk/install.sh
+..*       run /media/Enseignant/google-cloud-sdk/install.sh
 *    gcloud config set account yourname
 *    gcloud auth login
 *    gcloud config set project yourproject
@@ -44,6 +44,6 @@ molli-p@remote:~/.m2$ cat settings.xml
 * gcloud app browse
 
 
-# Access API
+# Access REST API
 
 https://yourapp.appstpot.com/_ah/api/explorer
