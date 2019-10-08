@@ -23,6 +23,7 @@ molli-p@remote:~/.m2$ cat settings.xml
 ```
  cd ~
  git clone https://github.com/momo54/webandcloud.git
+ cd webandcloud/myapp2018
  mvn install
 ```
 * start an eclipse with gcloud plugin
