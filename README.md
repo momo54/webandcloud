@@ -46,10 +46,12 @@ molli-p@remote:~/.m2$ cat settings.xml
  ```
 
 
-## Install and Run (gcloud SDK must be installed first. see https://cloud.google.com/sdk/install)
+## Install and Run 
+* (gcloud SDK must be installed first. see https://cloud.google.com/sdk/install)
 * git clone https://github.com/momo54/webandcloud.git
 * cd webandcloud
 * mvn appengine:deploy
+ * mvn should be logged fist, see error message -> tell you what to do... 
 * gcloud app browse
 
 # Access REST API
