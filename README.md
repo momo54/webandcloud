@@ -23,7 +23,7 @@ molli-p@remote:~/.m2$ cat settings.xml
 ```
  cd ~
  git clone https://github.com/momo54/webandcloud.git
- cd webandcloud/myapp2018
+ cd webandcloud
  mvn install
 ```
 * start an eclipse with gcloud plugin
@@ -45,20 +45,12 @@ molli-p@remote:~/.m2$ cat settings.xml
  gcloud app create
  ```
 
-## Running from the command line with GCloud SDK
-*    Add gcloud in your path:
- *       run /media/Enseignant/google-cloud-sdk/install.sh
-*    gcloud config set account yourname
-*    gcloud auth login
-*    gcloud config set project yourproject
 
-## Install and Run
+## Install and Run (gcloud SDK must be installed first. see https://cloud.google.com/sdk/install)
 * git clone https://github.com/momo54/webandcloud.git
-* cd webandcloud/myapp2018/
+* cd webandcloud
 * mvn appengine:deploy
 * gcloud app browse
 
-
 # Access REST API
-
 https://yourapp.appstpot.com/_ah/api/explorer
