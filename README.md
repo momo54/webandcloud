@@ -51,7 +51,7 @@ molli-p@remote:~/.m2$ cat settings.xml
 * git clone https://github.com/momo54/webandcloud.git
 * cd webandcloud
 * mvn appengine:deploy
- * mvn should be logged fist, see error message -> tell you what to do... 
+  * mvn should be logged fist, see error message -> tell you what to do... 
 * gcloud app browse
 
 # Access REST API
