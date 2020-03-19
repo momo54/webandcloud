@@ -5,6 +5,10 @@
   <sessions-enabled>false</sessions-enabled>
   <runtime>java8</runtime>
 
+   <static-files>
+    <include path="/**.html" >
+    </include>
+  </static-files>
   <system-properties>
     <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
   </system-properties>
