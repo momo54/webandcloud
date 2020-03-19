@@ -32,8 +32,8 @@ import com.google.appengine.repackaged.com.google.datastore.v1.CompositeFilter;
 import com.google.appengine.repackaged.com.google.datastore.v1.Projection;
 import com.google.appengine.repackaged.com.google.datastore.v1.PropertyFilter;
 
-@WebServlet(name = "PetQuery", urlPatterns = { "/pquery" })
-public class PetitionQuery extends HttpServlet {
+@WebServlet(name = "PrefixQuery", urlPatterns = { "/prefixquery" })
+public class PrefixQuery extends HttpServlet {
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -43,12 +43,13 @@ public class PetitionQuery extends HttpServlet {
 
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Key k = KeyFactory.createKey("PU", "P0");
+		Key k = KeyFactory.createKey("Post", "f1:");
 
-		Query q = new Query("PU").setFilter(new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.GREATER_THAN, k));
+		// query on key prefix
+		Query q = new Query("Post").setFilter(new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.GREATER_THAN, k));
 
 		PreparedQuery pq = datastore.prepare(q);
-		List<Entity> result = pq.asList(FetchOptions.Builder.withLimit(5));
+		List<Entity> result = pq.asList(FetchOptions.Builder.withLimit(2));
 
 		response.getWriter().print("<li> result:" + result.size() + "<br>");
 		Entity last=null;
@@ -57,8 +58,8 @@ public class PetitionQuery extends HttpServlet {
 			last=entity;
 		}
 
-		// the way to paginate...
-		q = new Query("PU").setFilter(new FilterPredicate("__key__", FilterOperator.GREATER_THAN, last.getKey()));
+		k = KeyFactory.createKey("Post", "f1:2019");
+		q = new Query("Post").setFilter(new FilterPredicate("__key__", FilterOperator.GREATER_THAN, k));
 
 		pq = datastore.prepare(q);
 		result = pq.asList(FetchOptions.Builder.withLimit(10));

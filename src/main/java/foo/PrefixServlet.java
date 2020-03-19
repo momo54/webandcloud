@@ -1,6 +1,8 @@
 package foo;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -25,28 +27,53 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import  java.util.concurrent.ThreadLocalRandom;
 
-@WebServlet(name = "PetServlet", urlPatterns = { "/petition" })
-public class PetitionServlet extends HttpServlet {
+@WebServlet(name = "PrefixServlet", urlPatterns = { "/prefix" })
+public class PrefixServlet extends HttpServlet {
 
+	static Random r = new Random();
+
+	
+	public LocalDate between(LocalDate startInclusive, LocalDate endExclusive) {
+	    long startEpochDay = startInclusive.toEpochDay();
+	    long endEpochDay = endExclusive.toEpochDay();
+	    long randomDay = ThreadLocalRandom
+	    	      .current()
+	    	      .nextLong(startEpochDay, endEpochDay);
+	    return LocalDate.ofEpochDay(randomDay);
+	}
+	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		response.setContentType("text/html");
 		response.setCharacterEncoding("UTF-8");
 
-		Random r = new Random();
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-		// Create users
-		for (int i = 0; i < 50; i++) {
-			for (int j = 0; j < 10; j++) {
-				Entity e = new Entity("PU", "P" + i + "_" + "U"+j);
-				e.setProperty("firstName", "My name is" + j);
-				e.setProperty("body", "Vote for my"+i+","+j);
+		
+		LocalDate start = LocalDate.of(2019, Month.OCTOBER, 14);
+		LocalDate end = LocalDate.now();
+
+		// Create posts
+		for (int i = 0; i < 100; i++) {
+			for (int j=0;j<10;i++) {
+				LocalDate rdate = this.between(start, end);
+				Entity e = new Entity("Post", "f" +i+":"+rdate.toString());
+				e.setProperty("body", "blabla" + i);
+				e.setProperty("owner", "f" + i);
+
+				// Create user friends
+				HashSet<String> toset = new HashSet<String>();
+				while (toset.size() < 5) {
+					toset.add("f" + r.nextInt(100));
+				}
+				e.setProperty("to", toset);
 				datastore.put(e);
-				response.getWriter().print("<li> created post:" + e.getKey() + "<br>");
+				response.getWriter().print("<li> created post:" + e.getKey() + "<br>" + toset + "<br>");
 			}
+
 		}
 	}
 }
