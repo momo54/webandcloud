@@ -58,8 +58,8 @@ public class PrefixQuery extends HttpServlet {
 			last=entity;
 		}
 
-		k = KeyFactory.createKey("Post", "f1:2019");
-		q = new Query("Post").setFilter(new FilterPredicate("__key__", FilterOperator.GREATER_THAN, k));
+		k = KeyFactory.createKey("Post", "f1:2020");
+		q = new Query("Post").setFilter(new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.GREATER_THAN, k));
 
 		pq = datastore.prepare(q);
 		result = pq.asList(FetchOptions.Builder.withLimit(10));
