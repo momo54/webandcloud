@@ -58,7 +58,7 @@ public class PrefixServlet extends HttpServlet {
 
 		// Create posts
 		for (int i = 0; i < 100; i++) {
-			for (int j=0;j<10;i++) {
+			for (int j=0;j<10;j++) {
 				LocalDate rdate = this.between(start, end);
 				Entity e = new Entity("Post", "f" +i+":"+rdate.toString());
 				e.setProperty("body", "blabla" + i);
