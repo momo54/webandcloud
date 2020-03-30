@@ -2,21 +2,95 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>First App Mythrill</title>
+<title>DiceGame</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+
+
+<script src="https://unpkg.com/mithril/mithril.js"></script>
+
 </head>
 <body>
 
 
+<div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
 
-	<script src="https://unpkg.com/mithril/mithril.js"></script>
-	<script>	
+<script>
+function onSignIn(googleUser) {
+   // Useful data for your client-side scripts:
+        var profile = googleUser.getBasicProfile();
+        console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+        console.log('Full Name: ' + profile.getName());
+        console.log('Given Name: ' + profile.getGivenName());
+        console.log('Family Name: ' + profile.getFamilyName());
+        console.log("Image URL: " + profile.getImageUrl());
+        console.log("Email: " + profile.getEmail());
 
+        // The ID token you need to pass to your backend:
+        var id_token = googleUser.getAuthResponse().id_token;
+        console.log("ID Token: " + id_token);
+      }
+</script>
+
+<script>	
+
+var DiceGame={
+  turn : 0,
+  d1 : 1,
+  d2 : 1,
+  name : 'spock',
+  score : 0,
+
+  play: function() {
+ 	if (this.turn < 10) {
+   	  this.d1 = Math.floor((Math.random() * 5) + 1);
+	  this.d2 = Math.floor((Math.random() * 5) + 1);
+	  if (this.d1 + this.d2 == 7) {
+	    this.score += 10;
+	  }
+	  this.turn++;
+	} else {
+		Score.save(this.score,this.name);
+		this.turn=0;
+		this.score=0;
+	}
+   }
+ } // DiceGame
+
+var DiceView={
+	view: function() {
+		return m('div', [
+			m('div',{class:'subtitle'},"Just play here"),
+			m("input[type=text][placeholder=name]", {
+				value: DiceGame.name,
+				class: 'input is-rounded',
+				 oninput: function (e) {
+					 DiceGame.name=e.target.value},
+				 }),
+			m('div',{class:'level'},[
+			 m('label',{class:'level-item'},"turn:"+DiceGame.turn),
+			 m('label',{class:'level-item'},"score:"+DiceGame.score),
+			]),
+			m('label',{class:'label'},"Dice 1:"+DiceGame.d1),
+			m('label',{class:'label'},"Dice 2:"+DiceGame.d2),
+			m('button',{
+				class: 'button is-link',
+				onclick: function(e) {DiceGame.play()}
+			    },"play"),
+		])
+	}	
+}
+ 
 var Score = {
 	    list: [],
 	    loadList: function() {
 	        return m.request({
 	            method: "GET",
-	            url: "https://sobike44.appspot.com/_ah/api/myApi/v1/entity/titi"
+	            url: "_ah/api/myApi/v1/topscores/"
 	        })
 	        .then(function(result) {
 	            Score.list = result.items
@@ -25,11 +99,11 @@ var Score = {
 	        })
 	    },
 	    current: {},
-	    save: function() {
+	    save: function(score,name) {
 	    	console.log("saving...",Score.current)
 	        return m.request({
-	            method: "POST",
-	            url: "https://sobike44.appspot.com/_ah/api/myApi/v1/addScore/"+Score.current.score+"/"+Score.current.name
+	            method: "GET",
+	            url: "_ah/api/myApi/v1/addScore/"+score+"/"+name
 	        })
 	        .then(function(result) {
 	        	console.log("got:",result)
@@ -39,51 +113,42 @@ var Score = {
 	}
 
 var ScoreView = {
-		oninit: Score.loadList,
-	    view: function() {
-	        return m(".user-list", Score.list.map(function(item) {
-	            return m(".user-list-item", item.properties.name + " " + item.properties.score)
-	        }))
-	    },
-		
+  oninit: Score.loadList,
+  view: function() {
+   	return m('div', [
+	  m('div',{class:'subtitle'},"Top 10 Scores"),
+	  m('table', {class:'table is-striped'},[
+	    m('tr', [
+	      m('th', {width:"20px"}, "Name"),
+	      m('th', {width:"50px"}, "Score"),
+	    ]),
+	    Score.list.map(function(item) {
+	      return m("tr", [
+  	        m('td', m('label', item.properties.name)),
+	        m('td', m('label', item.properties.score)),
+	      ])
+	    })
+	   ])
+	 ])
+  }
 }
-
-var count = 0;
 
 var Hello = {
-	    view: function() {
-	    	return m("main", [
-	            m("h1", {class: "title"}, "My second app  mithril tagada"),
-	            m("div", {id: "box"}, m(ScoreView)),
-	            m("div", {id: "form"}, m(Form)),
-	            m("button", {onclick: function() {count++}}, count + " clicks"),
-	        ])
-	    }
-	}
-
-
-var Form = {
-		view: function() {
-	        return m("form", {
-	                onsubmit: function(e) {
-	                    e.preventDefault()
-	                    Score.save()
-	                }
-	            }, [
-	            m("label.label", "score"),
-	            m("input.input[type=int][placeholder=score]",{
-	                oninput: function (e) {Score.current.score=e.target.value},
-	                value: Score.current.score
-	            }),
-	            m("label.label", "name"),
-	            m("input.input[type=text][placeholder=name]", {
-	                oninput: function (e) {Score.current.name=e.target.value},
-	                value: Score.current.name
-	            }),
-	            m("button.button[type=submit]", "Save"),
-	        ])
-	    }
+   view: function() {
+   	return m('div', {class:'container'}, [
+           m("h1", {class: 'title'}, 'The Dice Game'),
+//           m('<','<div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>'),
+//            m('div',{class:'g-signin2', 
+//         	   data-onsuccess:onSignin(),
+//         	   data-theme:'dark'}),
+           m('div',{class: 'tile is-ancestor'},[
+               m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(DiceView))),
+               m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(ScoreView))),
+           ])
+       ])
+   }
 }
+
 
 m.mount(document.body, Hello)	
 

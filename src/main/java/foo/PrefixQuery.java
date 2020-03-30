@@ -71,6 +71,19 @@ public class PrefixQuery extends HttpServlet {
 			last=entity;
 		}
 
+		q = new Query("Post").setFilter(new FilterPredicate("to", FilterOperator.EQUAL, "f1"));
+
+		pq = datastore.prepare(q);
+		result = pq.asList(FetchOptions.Builder.withLimit(10));
+
+		response.getWriter().print("<li> result:" + result.size() + "<br>");
+		last=null;
+		for (Entity entity : result) {
+			response.getWriter().print("<li>" + entity.getProperty("body"));
+			last=entity;
+		}
+
+		
 		
 	}
 }

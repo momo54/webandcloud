@@ -60,12 +60,13 @@ public class CountingSh extends HttpServlet {
 							Entity c = datastore.get(mycounter.get(randomc).getKey());
 							Long v=(Long)c.getProperty("val");
 							// UN SLEEP DE CONTENTION
-							Thread.sleep(100);
+							// Thread.sleep(100);
 							c.setProperty("val", v+1);
 							response.getWriter().print("Thread:"+Thread.currentThread()+",entity"+c.getKey()+",val:"+(v)+"<br>");
 							ds.put(c);
 							txn.commit();
-						} catch (EntityNotFoundException | IOException | InterruptedException e) {
+						} catch (EntityNotFoundException | IOException  e) {
+//						} catch (EntityNotFoundException | IOException | InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						} finally {

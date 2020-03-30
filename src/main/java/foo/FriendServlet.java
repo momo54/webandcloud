@@ -42,7 +42,7 @@ public class FriendServlet extends HttpServlet {
 			Entity e = new Entity("Friend", "f" + i);
 			e.setProperty("firstName", "first" + i);
 			e.setProperty("lastName", "last" + i);
-			e.setProperty("age", r.nextInt(100) + 1);
+			e.setProperty("age",r.nextInt(100) + 1);
 
 			// Create user friends
 			HashSet<String> fset = new HashSet<String>();

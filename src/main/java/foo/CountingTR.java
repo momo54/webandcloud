@@ -70,6 +70,12 @@ public class CountingTR extends HttpServlet {
 							e.printStackTrace();
 						} finally {
 							if (txn.isActive()) {
+								try {
+									response.getWriter().print("Thread:"+Thread.currentThread()+" abort ");
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							    txn.rollback();
 							  }
 						}
