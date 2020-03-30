@@ -55,4 +55,8 @@ molli-p@remote:~/.m2$ cat settings.xml
 * gcloud app browse
 
 # Access REST API
-https://yourapp.appstpot.com/_ah/api/explorer
+* (worked before) https://yourapp.appstpot.com/_ah/api/explorer
+* New version of endpoints (see https://cloud.google.com/endpoints/docs/frameworks/java/adding-api-management?hl=fr):
+  * mvn endpoints-framework:openApiDocs
+  * mvn endpoints-framework:discoveryDocs
+  * gcloud endpoints services deploy target/openapi-docs/openapi.json 
