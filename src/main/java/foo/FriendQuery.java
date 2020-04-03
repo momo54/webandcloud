@@ -48,6 +48,18 @@ public class FriendQuery extends HttpServlet {
 //      e.setProperty("friends", fset);
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		
+		Entity e=new Entity("Friend","f0");
+		try {
+			Entity e1=datastore.get(e.getKey());
+			response.getWriter().print("<li> Get F0:" + e1.getProperty("firstName"));
+		} catch (EntityNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
+		
 		Query q = new Query("Friend").setFilter(new FilterPredicate("firstName", FilterOperator.EQUAL, "first0"));
 
 		PreparedQuery pq = datastore.prepare(q);

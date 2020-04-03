@@ -26,7 +26,7 @@ var MyPost = {
 	    loadList: function() {
 	        return m.request({
 	            method: "GET",
-	            url: "_ah/api/myApi/v1/mypost/f1"
+	            url: "_ah/api/myApi/v1/mypost/f1/f1"
 	        })
 	        .then(function(result) {
 	            MyPost.list = result.items
@@ -51,7 +51,7 @@ var PostView = {
 	      return m("tr", [
   	        m('td', m('label', item.properties.owner)),
 	        m('td', m('label', item.properties.body)),
-	        m('td', m('label', item.properties.like.length)),
+	        m('td', m('label', item.properties.likec)),
 	      ])
 	    })
 	   ])

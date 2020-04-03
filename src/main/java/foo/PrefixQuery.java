@@ -71,6 +71,7 @@ public class PrefixQuery extends HttpServlet {
 			last=entity;
 		}
 
+		// Get all post where "f1" is in the receiver list (the 'to' list)
 		q = new Query("Post").setFilter(new FilterPredicate("to", FilterOperator.EQUAL, "f1"));
 
 		pq = datastore.prepare(q);
@@ -82,8 +83,30 @@ public class PrefixQuery extends HttpServlet {
 			response.getWriter().print("<li>" + entity.getProperty("body"));
 			last=entity;
 		}
-
 		
+		// comment liker ??
+		// comment liker last.getKey()???
+		
+		
+		// Does "f1" liked the last post ??
+		Key post=last.getKey();
+		response.getWriter().print("examining:"+post);
+		q = new Query("Post").setFilter(CompositeFilterOperator.and(
+				new FilterPredicate("like", FilterOperator.EQUAL, "f1"),
+				new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, post)));
+
+		pq = datastore.prepare(q);
+		result = pq.asList(FetchOptions.Builder.withLimit(1));
+		if (result.size()>0) {
+			response.getWriter().print("nothing to do");
+		} 
+		// write the entity with the "f1" in post.like...
+		response.getWriter().print("adding f1 anyway");
+		response.getWriter().print("last key:"+last.getKey()+", like:"+last.getProperty("like"));
+//		last.setProperty("like", last.getProperty("like")+" f1"));
+		//last.setProperty("count",last.)
+		datastore.put(last);
+
 		
 	}
 }

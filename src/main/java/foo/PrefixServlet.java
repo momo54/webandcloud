@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -56,6 +57,8 @@ public class PrefixServlet extends HttpServlet {
 		LocalDate start = LocalDate.of(2019, Month.OCTOBER, 14);
 		LocalDate end = LocalDate.now();
 
+		
+		
 		// Create posts
 		for (int i = 0; i < 100; i++) {
 			for (int j=0;j<10;j++) {
@@ -63,6 +66,7 @@ public class PrefixServlet extends HttpServlet {
 				Entity e = new Entity("Post", "f" +i+":"+rdate.toString());
 				e.setProperty("body", "blabla" + i);
 				e.setProperty("owner", "f" + i);
+				e.setProperty("date",new Date());
 
 				// Create user friends
 				HashSet<String> toset = new HashSet<String>();
@@ -70,6 +74,14 @@ public class PrefixServlet extends HttpServlet {
 					toset.add("f" + r.nextInt(100));
 				}
 				e.setProperty("to", toset);
+
+				HashSet<String> like = new HashSet<String>();
+				while (like.size() < 5) {
+					like.add("f" + r.nextInt(100));
+				}
+				e.setProperty("like", like);
+				e.setProperty("likec",like.size());
+				
 				datastore.put(e);
 				response.getWriter().print("<li> created post:" + e.getKey() + "<br>" + toset + "<br>");
 			}

@@ -95,10 +95,9 @@ var Score = {
 	        .then(function(result) {
 	            Score.list = result.items
 	        	console.log("got:",result.items)
-	        	m.redraw(true) // force
+	        	// m.redraw(true) 
 	        })
 	    },
-	    current: {},
 	    save: function(score,name) {
 	    	console.log("saving...",Score.current)
 	        return m.request({

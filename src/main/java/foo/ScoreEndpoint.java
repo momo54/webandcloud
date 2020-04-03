@@ -15,6 +15,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.PropertyProjection;
 import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -86,5 +87,25 @@ public class ScoreEndpoint {
 			
 			return  e;
 	}
+	@ApiMethod(name = "mypost",	httpMethod = HttpMethod.GET)
+	public List<Entity> mypost(@Named("name") String name,@Named("lastkey") String lastkey) {
+		Entity lk=new Entity("Post",lastkey);
+			Query q =
+			    new Query("Post").setFilter(CompositeFilterOperator.and(
+			        new FilterPredicate("owner", FilterOperator.EQUAL, name),
+					new FilterPredicate("__key__",FilterOperator.GREATER_THAN,lk.getKey())));
+//			q.addProjection(new PropertyProjection(Entity.KEY_RESERVED_PROPERTY,String.class));
+			q.addProjection(new PropertyProjection("body",String.class));
+//			q.addProjection(new PropertyProjection("url",String.class));
+			q.addProjection(new PropertyProjection("date",java.util.Date.class));
+			q.addProjection(new PropertyProjection("likec",Integer.class));
+//			q.addSort("date", SortDirection.DESCENDING);
+			
+			DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+			PreparedQuery pq = datastore.prepare(q);
+			List<Entity> result = pq.asList(FetchOptions.Builder.withLimit(20));
+			return result;
+	}
+
 
 }
