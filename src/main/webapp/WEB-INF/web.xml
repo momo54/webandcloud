@@ -13,6 +13,16 @@
 		<filter-class>com.google.api.control.ServiceManagementConfigFilter</filter-class>
 	</filter>
 
+
+	<filter-mapping>
+		<filter-name>endpoints-api-configuration</filter-name>
+		<servlet-name>EndpointsServlet</servlet-name>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+
+
 	<!-- Add a filter that performs Endpoints logging and monitoring. -->
 	<filter>
 		<filter-name>endpoints-api-controller</filter-name>
@@ -26,6 +36,7 @@
 			<param-value>${endpoints.project.id}.appspot.com</param-value>
 		</init-param>
 	</filter>
+
 
 	<servlet>
 		<servlet-name>EndpointsServlet</servlet-name>

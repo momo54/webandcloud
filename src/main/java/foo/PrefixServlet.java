@@ -64,7 +64,8 @@ public class PrefixServlet extends HttpServlet {
 			for (int j=0;j<10;j++) {
 				LocalDate rdate = this.between(start, end);
 				Entity e = new Entity("Post", "f" +i+":"+rdate.toString());
-				e.setProperty("body", "blabla" + i);
+				e.setProperty("body", "blabla" + rdate.toString());
+				e.setProperty("url", "https://dummyimage.com/320x200/000/fff.jpg&text="+rdate.toString());
 				e.setProperty("owner", "f" + i);
 				e.setProperty("date",new Date());
 

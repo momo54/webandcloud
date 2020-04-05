@@ -17,7 +17,8 @@
   </system-properties>
 <!-- [START env_variables] -->
     <env-variables>
-        <env-var name="ENDPOINTS_SERVICE_NAME" value="${endpoints.sobike44.id}.appspot.com" />
+        <env-var name="ENDPOINTS_SERVICE_NAME" value="sobike44.appspot.com" />
+<!--         <env-var name="ENDPOINTS_PROJECT_ID" value="sobike44" /> -->
     </env-variables>
     <!-- [END env_variables] -->
 </appengine-web-app>
