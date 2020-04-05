@@ -36,9 +36,9 @@
 <h2>Data Queries for managing Posts</h2>	
 	<li><a href='/prefixclean'>clean post data (long)</a>
 	<li><a href='/prefix'>install post data (long)</a>
-	<li><a href='/prefixquery'>query post data</a>
-    <li><a href='/post.html'>Test Get mypost</a>
-    <li><a href='/glogin-mithril.html'>Test Get mypost</a>
+	<li><a href='/prefixquery'>Raw queries on post data</a>
+    <li><a href='/post.html'>Unsecure MyPost</a>
+    <li><a href='/glogin-mithril.html'>Secure MyPost</a>
 	
 	
 <h2>Data Queries for managing Petitions</h2>	
@@ -50,7 +50,7 @@
 
 
 		<p id="toto"></p> <script>
-    const url = "https://sobike44.appspot.com/_ah/api/myApi/v1/topscores"
+    const url = "_ah/api/myApi/v1/topscores"
     fetch(url)
     .then(response => response.text())
     .then(data => document.getElementById('toto').innerHTML = data)

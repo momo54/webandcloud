@@ -20,7 +20,7 @@ var MyApp = (function (superclass) {
   MyApp.prototype.componentDidMount = function componentDidMount () {
     var this$1 = this;
 
-    fetch('https://sobike44.appspot.com/_ah/api/myApi/v1/scores')
+    fetch('_ah/api/myApi/v1/scores')
       .then(function (response) { return response.json(); })
       .then(function (data) { return this$1.setState({  data : data.items }); });
   };

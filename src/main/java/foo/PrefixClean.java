@@ -32,7 +32,7 @@ import com.google.appengine.repackaged.com.google.datastore.v1.CompositeFilter;
 import com.google.appengine.repackaged.com.google.datastore.v1.Projection;
 import com.google.appengine.repackaged.com.google.datastore.v1.PropertyFilter;
 
-@WebServlet(name = "PrefixQuery", urlPatterns = { "/prefixclean" })
+@WebServlet(name = "PrefixClean", urlPatterns = { "/prefixclean" })
 public class PrefixClean extends HttpServlet {
 
 	@Override

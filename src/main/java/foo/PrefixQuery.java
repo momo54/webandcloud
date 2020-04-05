@@ -41,7 +41,10 @@ public class PrefixQuery extends HttpServlet {
 		response.setContentType("text/html");
 		response.setCharacterEncoding("UTF-8");
 
+		response.getWriter().print("<h1> Querying Post Data </h1>");
 
+
+		response.getWriter().print("<h2> 2 Posts with key prefix f1 </h2>");
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Key k = KeyFactory.createKey("Post", "f1:");
 
@@ -58,6 +61,8 @@ public class PrefixQuery extends HttpServlet {
 			last=entity;
 		}
 
+		response.getWriter().print("<h2> 10 Posts with key prefix f1:2020 </h2>");
+
 		k = KeyFactory.createKey("Post", "f1:2020");
 		q = new Query("Post").setFilter(new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.GREATER_THAN, k));
 
@@ -72,6 +77,8 @@ public class PrefixQuery extends HttpServlet {
 		}
 
 		// Get all post where "f1" is in the receiver list (the 'to' list)
+		response.getWriter().print("<h2> 10 posts with f1 as receiver </h2>");
+
 		q = new Query("Post").setFilter(new FilterPredicate("to", FilterOperator.EQUAL, "f1"));
 
 		pq = datastore.prepare(q);
@@ -87,6 +94,7 @@ public class PrefixQuery extends HttpServlet {
 		// comment liker ??
 		// comment liker last.getKey()???
 		
+		response.getWriter().print("<h2> Does f1 liked the last post </h2>");
 		
 		// Does "f1" liked the last post ??
 		Key post=last.getKey();
@@ -106,7 +114,5 @@ public class PrefixQuery extends HttpServlet {
 //		last.setProperty("like", last.getProperty("like")+" f1"));
 		//last.setProperty("count",last.)
 		datastore.put(last);
-
-		
 	}
 }

@@ -13,7 +13,7 @@ class MyApp extends React.Component {
   }
 
   componentDidMount() {
-    fetch('https://sobike44.appspot.com/_ah/api/myApi/v1/scores')
+    fetch('_ah/api/myApi/v1/scores')
       .then(response => response.json())
       .then(data => this.setState({  data : data.items }));
   }

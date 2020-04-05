@@ -42,6 +42,8 @@ public class PetitionQuery extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 
 
+		response.getWriter().print("<h2> finall 5 PU where key > P0 </h2>");
+
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Key k = KeyFactory.createKey("PU", "P0");
 
@@ -57,7 +59,10 @@ public class PetitionQuery extends HttpServlet {
 			last=entity;
 		}
 
-		// the way to paginate...
+		response.getWriter().print("<h2> Great, get the next 10 results now </h2>");
+
+		
+		// One way to paginate...
 		q = new Query("PU").setFilter(new FilterPredicate("__key__", FilterOperator.GREATER_THAN, last.getKey()));
 
 		pq = datastore.prepare(q);
