@@ -26,6 +26,11 @@ molli-p@remote:~/.m2$ cat settings.xml
  cd webandcloud
  mvn install
 ```
+* Change "sobike44" with your google project ID in pom.xml
+* Change "sobike44" with your google project ID in src/main/webapp/WEB-INF/appengine-web.xml
+
+## Run in eclipse
+
 * start an eclipse with gcloud plugin
 ```
  /media/Enseignant/eclipse/eclipse
@@ -63,7 +68,8 @@ gcloud app browse
 
 # Access REST API
 * (worked before) 
-```https://<yourapp>.appstpot.com/_ah/api/explorer
+```
+https://<yourapp>.appstpot.com/_ah/api/explorer
 ```
 * New version of endpoints (see https://cloud.google.com/endpoints/docs/frameworks/java/adding-api-management?hl=fr):
 ```
