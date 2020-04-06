@@ -26,6 +26,11 @@ molli-p@remote:~/.m2$ cat settings.xml
  cd webandcloud
  mvn install
 ```
+* Change "sobike44" with your google project ID in pom.xml
+* Change "sobike44" with your google project ID in src/main/webapp/WEB-INF/appengine-web.xml
+
+## Run in eclipse
+
 * start an eclipse with gcloud plugin
 ```
  /media/Enseignant/eclipse/eclipse
@@ -33,7 +38,7 @@ molli-p@remote:~/.m2$ cat settings.xml
  ```
 * import the maven project in eclipse
  * File/import/maven/existing maven project
- * browse to ~/webandcloud/myapp2018
+ * browse to ~/webandcloud
  * select pom.xml
  * Finish and wait
  * Ready to deploy and run...
@@ -50,13 +55,26 @@ molli-p@remote:~/.m2$ cat settings.xml
 * (gcloud SDK must be installed first. see https://cloud.google.com/sdk/install)
 * git clone https://github.com/momo54/webandcloud.git
 * cd webandcloud
-* mvn appengine:deploy
-  * mvn should be logged fist, see error message -> tell you what to do... 
-* gcloud app browse
+* running local (http://localhost:8080):
+```
+mvn appengine:run
+```
+* Deploying at Google (need gcloud configuration, see error message -> tell you what to do... 
+)
+```
+mvn appengine:deploy
+gcloud app browse
+```
 
 # Access REST API
-* (worked before) https://yourapp.appstpot.com/_ah/api/explorer
+* (worked before) 
+```
+https://<yourapp>.appstpot.com/_ah/api/explorer
+```
 * New version of endpoints (see https://cloud.google.com/endpoints/docs/frameworks/java/adding-api-management?hl=fr):
-  * mvn endpoints-framework:openApiDocs
-  * mvn endpoints-framework:discoveryDocs
-  * gcloud endpoints services deploy target/openapi-docs/openapi.json 
+```
+mvn clean package
+mvn endpoints-framework:openApiDocs
+gcloud endpoints services deploy target/openapi-docs/openapi.json 
+mvn appengine:deploy
+```
