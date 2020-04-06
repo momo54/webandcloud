@@ -35,7 +35,16 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
 
-@Api(name = "myApi", version = "v1", namespace = @ApiNamespace(ownerDomain = "helloworld.example.com", ownerName = "helloworld.example.com", packagePath = ""))
+@Api(name = "myApi",
+     version = "v1",
+     audiences = "927375242383-t21v9ml38tkh2pr30m4hqiflkl3jfohl.apps.googleusercontent.com",
+  	 clientIds = "927375242383-t21v9ml38tkh2pr30m4hqiflkl3jfohl.apps.googleusercontent.com",
+     namespace =
+     @ApiNamespace(
+		   ownerDomain = "helloworld.example.com",
+		   ownerName = "helloworld.example.com",
+		   packagePath = "")
+     )
 
 public class ScoreEndpoint {
 
@@ -110,32 +119,35 @@ public class ScoreEndpoint {
 	@ApiMethod(name = "mypost", httpMethod = HttpMethod.GET)
 	public CollectionResponse<Entity> mypost(@Named("name") String name, @Nullable @Named("next") String cursorString) {
 
-		Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, name))
-				.addSort("date", SortDirection.DESCENDING).addProjection(new PropertyProjection("body", String.class))
-				.addProjection(new PropertyProjection("date", java.util.Date.class))
-				.addProjection(new PropertyProjection("likec", Integer.class))
-				.addProjection(new PropertyProjection("url", String.class));
+	    Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, name));
 
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		PreparedQuery pq = datastore.prepare(q);
+	    // https://cloud.google.com/appengine/docs/standard/python/datastore/projectionqueries#Indexes_for_projections
+	    //q.addProjection(new PropertyProjection("body", String.class));
+	    //q.addProjection(new PropertyProjection("date", java.util.Date.class));
+	    //q.addProjection(new PropertyProjection("likec", Integer.class));
+	    //q.addProjection(new PropertyProjection("url", String.class));
 
-		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(2);
-
-		if (cursorString != null) {
-			fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));
+	    // looks like a good idea but...
+	    // q.addSort("date", SortDirection.DESCENDING);
+	    
+	    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	    PreparedQuery pq = datastore.prepare(q);
+	    
+	    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(2);
+	    
+	    if (cursorString != null) {
+		fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));
 		}
-
-		QueryResultList<Entity> results = pq.asQueryResultList(fetchOptions);
-		cursorString = results.getCursor().toWebSafeString();
-
-		return CollectionResponse.<Entity>builder().setItems(results).setNextPageToken(cursorString).build();
-
+	    
+	    QueryResultList<Entity> results = pq.asQueryResultList(fetchOptions);
+	    cursorString = results.getCursor().toWebSafeString();
+	    
+	    return CollectionResponse.<Entity>builder().setItems(results).setNextPageToken(cursorString).build();
+	    
 	}
-
-	@ApiMethod(name = "getPost", httpMethod = ApiMethod.HttpMethod.GET, authenticators = {
-			EspAuthenticator.class }, audiences = {
-					"927375242383-t21v9ml38tkh2pr30m4hqiflkl3jfohl.apps.googleusercontent.com" }, clientIds = {
-							"927375242383-t21v9ml38tkh2pr30m4hqiflkl3jfohl.apps.googleusercontent.com" })
+    
+	@ApiMethod(name = "getPost",
+		   httpMethod = ApiMethod.HttpMethod.GET)
 	public CollectionResponse<Entity> getPost(User user, @Nullable @Named("next") String cursorString)
 			throws UnauthorizedException {
 
@@ -143,11 +155,17 @@ public class ScoreEndpoint {
 			throw new UnauthorizedException("Invalid credentials");
 		}
 
-		Query q = new Query("Post").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, user.getEmail()))
-				.addSort("date", SortDirection.DESCENDING).addProjection(new PropertyProjection("body", String.class))
-				.addProjection(new PropertyProjection("date", java.util.Date.class))
-				.addProjection(new PropertyProjection("likec", Integer.class))
-				.addProjection(new PropertyProjection("url", String.class));
+		Query q = new Query("Post").
+		    setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, user.getEmail()));
+
+		// Multiple projection require a composite index
+		// q.addProjection(new PropertyProjection("body", String.class))
+		// q.addProjection(new PropertyProjection("date", java.util.Date.class))
+		// q.addProjection(new PropertyProjection("likec", Integer.class))
+		// q.addProjection(new PropertyProjection("url", String.class));
+
+		// looks like a good idea but...
+		//q.addSort("date", SortDirection.DESCENDING);
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		PreparedQuery pq = datastore.prepare(q);
@@ -164,10 +182,7 @@ public class ScoreEndpoint {
 		return CollectionResponse.<Entity>builder().setItems(results).setNextPageToken(cursorString).build();
 	}
 
-	@ApiMethod(name = "postMsg", httpMethod = HttpMethod.POST, authenticators = {
-			EspAuthenticator.class }, audiences = {
-					"927375242383-t21v9ml38tkh2pr30m4hqiflkl3jfohl.apps.googleusercontent.com" }, clientIds = {
-							"927375242383-t21v9ml38tkh2pr30m4hqiflkl3jfohl.apps.googleusercontent.com" })
+	@ApiMethod(name = "postMsg", httpMethod = HttpMethod.POST)
 	public Entity postMsg(User user, PostMessage pm) throws UnauthorizedException {
 
 		if (user == null) {
