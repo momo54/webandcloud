@@ -1,6 +1,7 @@
 package foo;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -159,13 +160,21 @@ public class ScoreEndpoint {
 		    setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, user.getEmail()));
 
 		// Multiple projection require a composite index
-		// q.addProjection(new PropertyProjection("body", String.class))
-		// q.addProjection(new PropertyProjection("date", java.util.Date.class))
-		// q.addProjection(new PropertyProjection("likec", Integer.class))
+		// owner is automatically projected...
+		// q.addProjection(new PropertyProjection("body", String.class));
+		// q.addProjection(new PropertyProjection("date", java.util.Date.class));
+		// q.addProjection(new PropertyProjection("likec", Integer.class));
 		// q.addProjection(new PropertyProjection("url", String.class));
 
 		// looks like a good idea but...
-		//q.addSort("date", SortDirection.DESCENDING);
+		// require a composite index
+		// - kind: Post
+		//  properties:
+		//  - name: owner
+		//  - name: date
+		//    direction: desc
+
+		// q.addSort("date", SortDirection.DESCENDING);
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		PreparedQuery pq = datastore.prepare(q);
@@ -189,16 +198,22 @@ public class ScoreEndpoint {
 			throw new UnauthorizedException("Invalid credentials");
 		}
 
-		Entity e = new Entity("Post");
+		Entity e = new Entity("Post", Long.MAX_VALUE-(new Date()).getTime()+":"+user.getEmail());
 		e.setProperty("owner", user.getEmail());
 		e.setProperty("url", pm.url);
 		e.setProperty("body", pm.body);
 		e.setProperty("likec", 0);
 		e.setProperty("date", new Date());
 
+///		Solution pour pas projeter les listes
+//		Entity pi = new Entity("PostIndex", e.getKey());
+//		HashSet<String> rec=new HashSet<String>();
+//		pi.setProperty("receivers",rec);
+		
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Transaction txn = datastore.beginTransaction();
 		datastore.put(e);
+//		datastore.put(pi);
 		txn.commit();
 		return e;
 	}
