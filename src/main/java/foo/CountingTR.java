@@ -60,7 +60,7 @@ public class CountingTR extends HttpServlet {
 							Entity c = datastore.get(e.getKey());
 							Long v=(Long)c.getProperty("val");
 							// UN SLEEP DE CONTENTION
-							//Thread.sleep(100);
+							Thread.sleep(100);
 							c.setProperty("val", v+1);
 							response.getWriter().print("Thread:"+Thread.currentThread()+",val:"+v+"<br>");
 							ds.put(c);
@@ -68,6 +68,9 @@ public class CountingTR extends HttpServlet {
 						} catch (EntityNotFoundException | IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
 						} finally {
 							if (txn.isActive()) {
 								try {

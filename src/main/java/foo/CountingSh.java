@@ -41,7 +41,7 @@ public class CountingSh extends HttpServlet {
 		List<Entity> mycounter = new ArrayList<>(); 
 		for (int i=0;i<20;i++) {
 			Entity e;
-			mycounter.add(e=new Entity("Count", i+"c1"));
+			mycounter.add(e=new Entity("Count", i+"c1")); // 0c1, 2c1, 3c1 ... , 19c1
 			e.setProperty("val", 0);
 			datastore.put(mycounter);
 		}
@@ -60,13 +60,16 @@ public class CountingSh extends HttpServlet {
 							Entity c = datastore.get(mycounter.get(randomc).getKey());
 							Long v=(Long)c.getProperty("val");
 							// UN SLEEP DE CONTENTION
-							// Thread.sleep(100);
+							Thread.sleep(100);
 							c.setProperty("val", v+1);
 							response.getWriter().print("Thread:"+Thread.currentThread()+",entity"+c.getKey()+",val:"+(v)+"<br>");
 							ds.put(c);
 							txn.commit();
 						} catch (EntityNotFoundException | IOException  e) {
 //						} catch (EntityNotFoundException | IOException | InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						} finally {

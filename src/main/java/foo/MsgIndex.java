@@ -72,6 +72,8 @@ public class MsgIndex extends HttpServlet {
 		
 		datastore.put(e);
 		datastore.put(pi);
+		datastore.put(pi2);
+
 
 		response.getWriter().append("<li> Key of Msg:"+e.getKey());
 		response.getWriter().append("<li> Key of MsgIndex:"+pi.getKey());

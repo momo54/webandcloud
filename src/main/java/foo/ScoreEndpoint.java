@@ -103,7 +103,7 @@ public class ScoreEndpoint {
 	@ApiMethod(name = "postMessage", httpMethod = HttpMethod.POST)
 	public Entity postMessage(PostMessage pm) {
 
-		Entity e = new Entity("Post");
+		Entity e = new Entity("Post"); // quelle est la clef ?? non specifié -> clef automatique
 		e.setProperty("owner", pm.owner);
 		e.setProperty("url", pm.url);
 		e.setProperty("body", pm.body);
@@ -129,6 +129,9 @@ public class ScoreEndpoint {
 	    //q.addProjection(new PropertyProjection("url", String.class));
 
 	    // looks like a good idea but...
+	    // generate a DataStoreNeedIndexException -> 
+	    // require compositeIndex on owner + date
+	    // Explosion combinatoire.
 	    // q.addSort("date", SortDirection.DESCENDING);
 	    
 	    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
