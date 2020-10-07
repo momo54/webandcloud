@@ -53,10 +53,15 @@ molli-p@remote:~/.m2$ cat settings.xml
 
 ## Install and Run 
 * (gcloud SDK must be installed first. see https://cloud.google.com/sdk/install)
+ * the gcloud command should be in your path. Run the following command to initialize your local install of gcloud.
+```
+gcloud init
+```
 * git clone https://github.com/momo54/webandcloud.git
 * cd webandcloud
 * running local (http://localhost:8080):
 ```
+mvn package
 mvn appengine:run
 ```
 * Deploying at Google (need gcloud configuration, see error message -> tell you what to do... 
