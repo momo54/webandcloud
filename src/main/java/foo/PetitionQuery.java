@@ -59,13 +59,14 @@ public class PetitionQuery extends HttpServlet {
 			last=entity;
 		}*/
 
-		response.getWriter().print("<h2> Great, get the next 10 results now </h2>");
+		response.getWriter().print("<h2>Q1 : Great, get the next 10 results now </h2>");
 
-		
+		long t1=System.currentTimeMillis();
+
 		// One way to paginate...
 		Query q = new Query("Petition");//.setFilter(new FilterPredicate("__key__", FilterOperator.GREATER_THAN, last.getKey()));
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
+		
 		PreparedQuery pq = datastore.prepare(q);
 		List<Entity> result = pq.asList(FetchOptions.Builder.withLimit(10));
 
@@ -75,8 +76,11 @@ public class PetitionQuery extends HttpServlet {
 			response.getWriter().print("<li>" + entity.getKey()+ "/" + entity.getProperty("owner"));
 			last=entity;
 		}
+		long t2=System.currentTimeMillis();
+		response.getWriter().print("<h2> time(Q1) </h2>");		
+		response.getWriter().print("q1:"+(t2-t1)+"\n");
 		
-		response.getWriter().print("<h2> petition signée par l'utilisateur u290 </h2>");
+		response.getWriter().print("<h2>Q2 : petition signée par l'utilisateur u290 </h2>");
 		
 		//Key k = KeyFactory.createKey("Petition", "9223370421632728681p496");
 		q = new Query("Petition").setFilter(new FilterPredicate("signatory", FilterOperator.EQUAL, "u290"));
@@ -91,8 +95,11 @@ public class PetitionQuery extends HttpServlet {
 			response.getWriter().print("<li>" + entity.getKey()+ "/" + entity.getProperty("owner"));
 			last=entity;
 		}
+		long t3=System.currentTimeMillis();
+		response.getWriter().print("<h2> time(Q2) </h2>");		
+		response.getWriter().print("q2:"+(t3-t2)+"\n");
 		
-		response.getWriter().print("<h2> petitions les plus signées </h2>");
+		response.getWriter().print("<h2>Q3 : petitions les plus signées </h2>");
 		
 		//k = KeyFactory.createKey("Petition", "u2");
 		q = new Query("Petition").addSort("nbSignatory", SortDirection.DESCENDING);
@@ -107,6 +114,9 @@ public class PetitionQuery extends HttpServlet {
 			response.getWriter().print("<li>" + entity.getKey()+ "/" + entity.getProperty("owner"));
 			last=entity;
 		}
+		long t4=System.currentTimeMillis();
+		response.getWriter().print("<h2> time(Q3) </h2>");		
+		response.getWriter().print("q3:"+(t4-t3)+"\n");
 		
 		/*response.getWriter().print("<h2> petitions séléctionnées par tag </h2>");
 		HashSet<String> fset2 = new HashSet<String>();

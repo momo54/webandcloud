@@ -56,14 +56,6 @@ public class TinyPetEndpoint {
 
 	Random r = new Random();
 
-	/*@ApiMethod(name = "Petition", httpMethod = HttpMethod.GET)
-	public List<Entity> Petition() {
-		Query q = new Query("Petition").addSort("name", SortDirection.DESCENDING);
-		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		PreparedQuery pq = datastore.prepare(q);
-		List<Entity> result = pq.asList(FetchOptions.Builder.withLimit(100));
-		return result;
-	}*/
 	//Charge le top 10 petitions
 	@ApiMethod(name = "toppetition", httpMethod = HttpMethod.GET)
 	public List<Entity> toppetition() {
