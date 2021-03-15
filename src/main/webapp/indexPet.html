@@ -71,9 +71,11 @@ var Petition = {
 	    },
 	    save: function(body) {
 	    	console.log("saving...",Petition.current)
+	    	var data={'body':body}
 	        return m.request({
-	            method: "GET",
-	            url: "_ah/api/myApi/v1/addPet/"+body+"/"+'?access_token='+encodeURIComponent(Petition.ID)
+	            method: "POST",
+	            url: "_ah/api/myApi/v1/addPet"+'?access_token='+encodeURIComponent(Petition.ID),
+	            params: data,
 	        })
 	        .then(function(result) {
 	        	console.log("got:",result)
@@ -83,9 +85,11 @@ var Petition = {
 	    },
 	    sign: function(key) {
 	    	console.log("signing...",key)
+	    	var data={'body': key}
 	        return m.request({
-	            method: "GET",
-	            url: "_ah/api/myApi/v1/addsign/"+key+"/"+'?access_token='+encodeURIComponent(Petition.ID)
+	            method: "POST",
+	            url: "_ah/api/myApi/v1/addsign"+'?access_token='+encodeURIComponent(Petition.ID),
+	            params: data,
 	        })
 	        .then(function(result) {
 	        	console.log("got:",result)

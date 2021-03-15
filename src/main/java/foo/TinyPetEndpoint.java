@@ -77,28 +77,31 @@ public class TinyPetEndpoint {
 	}
 	
 	//Signe une petition
-		@ApiMethod(name = "addsign", httpMethod = HttpMethod.GET)
-		public Entity addsign(@Named("ekey") String ekey,@Named("euser") User euser) {//, @Named("subject") String subject, @Named("Signature") int signature) {
+		@ApiMethod(name = "addsign", httpMethod = HttpMethod.POST)
+		public Entity addsign(User user, PostMessage pm) throws UnauthorizedException {
+			if (user == null) {
+				throw new UnauthorizedException("Invalid credentials");
+			}
 			 DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 			///utiliser coutingSH pour implémenter
 			
 			//https://cloud.google.com/datastore/docs/concepts/entities#updating_an_entity
 			//mettre à jours une entité
-			Key lekey = KeyFactory.createKey("Petition", ekey);
+			Key lkey = KeyFactory.createKey("Petition", pm.body);
 			Entity ent = new Entity("Petition","hello");
 			try {
-				Entity ent2 = datastore.get(lekey);
-				int nb =  Integer.parseInt(ent2.getProperty("nbSignatory").toString());
-			    System.out.println("après get");
+				ent = datastore.get(lkey);
+				int nb =  Integer.parseInt(ent.getProperty("nbSignatory").toString());
+			    //System.out.println("après get");
 			    //@SuppressWarnings("unchecked") // Cast can't verify generic type.
 			    //ArrayList<String> l = new ArrayList<String>();
 			    //l = (ArrayList<String>) ent2.getProperty("tag");
 			    //System.out.println(l.get(0));
 			    //l.add("user");
 			    //ent2.setProperty("signatory", l);
-			    ent2.setProperty("nbSignatory", nb + 1 );
-				datastore.put(ent2);
-				return ent2;
+			    ent.setProperty("nbSignatory", nb + 1 );
+				datastore.put(ent);
+				return ent;
 			} catch (EntityNotFoundException e) {
 			// This should never happen
 			}
@@ -106,12 +109,16 @@ public class TinyPetEndpoint {
 		}
 		
 	//Crée une petition
-	@ApiMethod(name = "addPet", httpMethod = HttpMethod.GET)
-	public Entity addPet(@Named("body") String body, @Named("owner") User owner) {
+	@ApiMethod(name = "addPet", httpMethod = HttpMethod.POST)
+	public Entity addPet(User owner, PostMessage pm) throws UnauthorizedException {
 
+		if (owner == null) {
+			throw new UnauthorizedException("Invalid credentials");
+		}
+		
 		Date date = new Date(); // voir score endpoint clé
 		Entity e = new Entity("Petition", Long.MAX_VALUE-(new Date()).getTime() +":" + owner.getEmail());
-		e.setProperty("body", body);
+		e.setProperty("body", pm.body);
 		e.setProperty("owner", owner.getEmail());
 		e.setProperty("date", date);
 				
