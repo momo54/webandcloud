@@ -59,7 +59,6 @@ public class TinyPetEndpoint {
 	/*@ApiMethod(name = "Petition", httpMethod = HttpMethod.GET)
 	public List<Entity> Petition() {
 		Query q = new Query("Petition").addSort("name", SortDirection.DESCENDING);
-
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		PreparedQuery pq = datastore.prepare(q);
 		List<Entity> result = pq.asList(FetchOptions.Builder.withLimit(100));
@@ -77,40 +76,41 @@ public class TinyPetEndpoint {
 	}
 	
 	//Signe une petition
-		@ApiMethod(name = "addsign", httpMethod = HttpMethod.POST)
-		public Entity addsign(User user, PostMessage pm) throws UnauthorizedException {
-			if (user == null) {
-				throw new UnauthorizedException("Invalid credentials");
-			}
-			 DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-			///utiliser coutingSH pour implémenter
-			
-			//https://cloud.google.com/datastore/docs/concepts/entities#updating_an_entity
-			//mettre à jours une entité
-			Key lkey = KeyFactory.createKey("Petition", pm.body);
-			Entity ent = new Entity("Petition","hello");
-			try {
-				ent = datastore.get(lkey);
-				int nb =  Integer.parseInt(ent.getProperty("nbSignatory").toString());
-			    //System.out.println("après get");
-			    //@SuppressWarnings("unchecked") // Cast can't verify generic type.
-			    //ArrayList<String> l = new ArrayList<String>();
-			    //l = (ArrayList<String>) ent2.getProperty("tag");
-			    //System.out.println(l.get(0));
-			    //l.add("user");
-			    //ent2.setProperty("signatory", l);
-			    ent.setProperty("nbSignatory", nb + 1 );
-				datastore.put(ent);
-				return ent;
-			} catch (EntityNotFoundException e) {
-			// This should never happen
-			}
-			return ent;
+	@ApiMethod(name = "signPetition", httpMethod = HttpMethod.POST)
+	public Entity signPetition(User user, PostMessage pm) throws UnauthorizedException {
+		if (user == null) {
+			throw new UnauthorizedException("Invalid credentials");
 		}
+		 DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		///utiliser coutingSH pour implémenter
+			
+		//https://cloud.google.com/datastore/docs/concepts/entities#updating_an_entity
+		//mettre à jours une entité
+		Key lkey = KeyFactory.createKey("Petition", pm.body);
+		Entity ent = new Entity("Petition","hello");
+		try {
+			ent = datastore.get(lkey);
+			int nb =  Integer.parseInt(ent.getProperty("nbSignatory").toString());
+		    System.out.println("après get");
+		    @SuppressWarnings("unchecked") // Cast can't verify generic type.
+		    ArrayList<String> signatories = (ArrayList<String>) ent.getProperty("signatory");
+		    
+		    if(!signatories.contains(user.getEmail())) {
+		    	signatories.add(user.getEmail());
+		    	ent.setProperty("signatory", signatories);
+			    ent.setProperty("nbSignatory", nb + 1 );
+		    }
+			datastore.put(ent);
+			return ent;
+		} catch (EntityNotFoundException e) {
+		// This should never happen
+		}
+		return ent;
+	}
 		
 	//Crée une petition
-	@ApiMethod(name = "addPet", httpMethod = HttpMethod.POST)
-	public Entity addPet(User owner, PostMessage pm) throws UnauthorizedException {
+	@ApiMethod(name = "createPetetition", httpMethod = HttpMethod.POST)
+	public Entity createPetition(User owner, PostMessage pm) throws UnauthorizedException {
 
 		if (owner == null) {
 			throw new UnauthorizedException("Invalid credentials");
@@ -140,9 +140,12 @@ public class TinyPetEndpoint {
 	}
 	
 	//Charger les pétitions signées par l'utilisateur
-	@ApiMethod(name = "ownerPetition", httpMethod = HttpMethod.GET)
-	public List<Entity> ownerPetition(@Named("owner") User owner) {	    
-		Query q = new Query("Petition").setFilter(new FilterPredicate("owner", FilterOperator.EQUAL, owner.getEmail()));
+	@ApiMethod(name = "MyPetition", httpMethod = HttpMethod.GET)
+	public List<Entity> MyPetition(@Named("owner") User owner) throws UnauthorizedException {
+		if (owner == null) {
+			throw new UnauthorizedException("Invalid credentials");
+		}
+		Query q = new Query("Petition").setFilter(new FilterPredicate("signatory", FilterOperator.EQUAL, owner.getEmail()));
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
 		PreparedQuery pq = datastore.prepare(q);
@@ -150,6 +153,7 @@ public class TinyPetEndpoint {
 		return result;
 	}
 	
+	///Poste message
 	
 	@ApiMethod(name = "postMessage", httpMethod = HttpMethod.POST)
 	public Entity postMessage(PostMessage pm) {
