@@ -13,7 +13,7 @@
 		<servlet-class>com.google.api.server.spi.EndpointsServlet</servlet-class>
 		<init-param>
 			<param-name>services</param-name>
-			<param-value>foo.TinyPetEndpoint</param-value>
+			<param-value>foo.ScoreEndpoint</param-value>
 		</init-param>
 	</servlet>
 	<!-- Route API method requests to the backend. -->

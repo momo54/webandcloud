@@ -27,7 +27,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.repackaged.com.google.datastore.v1.CompositeFilter;
 import com.google.appengine.repackaged.com.google.datastore.v1.Projection;
 import com.google.appengine.repackaged.com.google.datastore.v1.PropertyFilter;
@@ -42,7 +42,7 @@ public class PetitionQuery extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 
 
-		response.getWriter().print("<h2> finall 5 PU where key > P0 </h2>");
+		/*response.getWriter().print("<h2> finall 5 PU where key > P0 </h2>");
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Key k = KeyFactory.createKey("PU", "P0");
@@ -57,13 +57,30 @@ public class PetitionQuery extends HttpServlet {
 		for (Entity entity : result) {
 			response.getWriter().print("<li>" + entity.getKey());
 			last=entity;
-		}
+		}*/
 
 		response.getWriter().print("<h2> Great, get the next 10 results now </h2>");
 
 		
 		// One way to paginate...
-		q = new Query("PU").setFilter(new FilterPredicate("__key__", FilterOperator.GREATER_THAN, last.getKey()));
+		Query q = new Query("Petition");//.setFilter(new FilterPredicate("__key__", FilterOperator.GREATER_THAN, last.getKey()));
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+		PreparedQuery pq = datastore.prepare(q);
+		List<Entity> result = pq.asList(FetchOptions.Builder.withLimit(10));
+
+		response.getWriter().print("<li> result:" + result.size() + "<br>");
+		Entity last=null;
+		for (Entity entity : result) {
+			response.getWriter().print("<li>" + entity.getKey()+ "/" + entity.getProperty("owner"));
+			last=entity;
+		}
+		
+		response.getWriter().print("<h2> petition signée par l'utilisateur u290 </h2>");
+		
+		//Key k = KeyFactory.createKey("Petition", "9223370421632728681p496");
+		q = new Query("Petition").setFilter(new FilterPredicate("signatory", FilterOperator.EQUAL, "u290"));
+		datastore = DatastoreServiceFactory.getDatastoreService();
 
 		pq = datastore.prepare(q);
 		result = pq.asList(FetchOptions.Builder.withLimit(10));
@@ -71,10 +88,43 @@ public class PetitionQuery extends HttpServlet {
 		response.getWriter().print("<li> result:" + result.size() + "<br>");
 		last=null;
 		for (Entity entity : result) {
-			response.getWriter().print("<li>" + entity.getKey());
+			response.getWriter().print("<li>" + entity.getKey()+ "/" + entity.getProperty("owner"));
 			last=entity;
 		}
+		
+		response.getWriter().print("<h2> petitions les plus signées </h2>");
+		
+		//k = KeyFactory.createKey("Petition", "u2");
+		q = new Query("Petition").addSort("nbSignatory", SortDirection.DESCENDING);
+		datastore = DatastoreServiceFactory.getDatastoreService();
 
+		pq = datastore.prepare(q);
+		result = pq.asList(FetchOptions.Builder.withLimit(10));
+
+		response.getWriter().print("<li> result:" + result.size() + "<br>");
+		last=null;
+		for (Entity entity : result) {
+			response.getWriter().print("<li>" + entity.getKey()+ "/" + entity.getProperty("owner"));
+			last=entity;
+		}
+		
+		/*response.getWriter().print("<h2> petitions séléctionnées par tag </h2>");
+		HashSet<String> fset2 = new HashSet<String>();
+		fset2.add("t1");
+		fset2.add("t120");
+		q = new Query("Petition").setFilter(CompositeFilter.and()
+		        PropertyFilter.eq("tag", "t1"), PropertyFilter.eq("tag", "t120")));
+		datastore = DatastoreServiceFactory.getDatastoreService();
+
+		pq = datastore.prepare(q);
+		result = pq.asList(FetchOptions.Builder.withLimit(10));
+
+		response.getWriter().print("<li> result:" + result.size() + "<br>");
+		last=null;
+		for (Entity entity : result) {
+			response.getWriter().print("<li>" + entity.getKey()+ "/" + entity.getProperty("owner")+ "/" + entity.getProperty("nbSignatory"));
+			last=entity;
+		}*/
 		
 	}
 }

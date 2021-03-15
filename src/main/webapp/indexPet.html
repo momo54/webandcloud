@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Petition App</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+	
+	
+	<script src="https://unpkg.com/mithril/mithril.js"></script>
+	<meta name="google-signin-scope" content="profile email">
+	<meta name="google-signin-client_id" content="666941423950-75griipv5tc10il429v8hv8k17g5vbgp.apps.googleusercontent.com">
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
+</head>
+<body>
+<script>	
+
+var CreatePetition={
+  body : '',
+  owner : '01523448',
+  User : 'max',
+ }
+
+var NewPetitionView={
+	view: function() {
+		return m('div', [
+			m('div',{class:'subtitle'},"Add a petition"),
+			m("input[type=text][placeholder=name]", {
+				class: 'input is-rounded',
+				 oninput: function (e) {
+					 CreatePetition.body=e.target.value},
+				 }),
+			m('button',{
+				class: 'button is-link',
+				onclick: function(e) {Petition.save(CreatePetition.body,Petition.ID)}
+			    },"Submit"),
+		])
+	}	
+}
+ 
+var Petition = {
+		ID:"",
+		nextToken:"",
+	    listtop100: [],
+	    listowner: [],
+	    loadList: function() {
+	        return m.request({
+	            method: "GET",
+	            url: "_ah/api/myApi/v1/toppetition/"
+	        })
+	        .then(function(result) {
+	            Petition.listtop100 = result.items
+	        	console.log("got:",result.items)
+	        	// m.redraw(true) 
+	        })
+	    },
+	    loadListOwner: function() {
+	        return m.request({
+	            method: "GET",
+	            url: "_ah/api/myApi/v1/ownerPetition/"+'?access_token='+ encodeURIComponent(Petition.ID)
+	        })
+	        .then(function(result) {
+	            Petition.listowner = result.items
+	        	console.log("got:",result.items)
+	        	// m.redraw(true) 
+	        })
+	    },
+	    save: function(body) {
+	    	console.log("saving...",Petition.current)
+	        return m.request({
+	            method: "GET",
+	            url: "_ah/api/myApi/v1/addPet/"+body+"/"+'?access_token='+encodeURIComponent(Petition.ID)
+	        })
+	        .then(function(result) {
+	        	console.log("got:",result)
+	        	Petition.loadList()
+	        	Petition.loadListOwner(Petition.ID)
+	        })
+	    },
+	    sign: function(key) {
+	    	console.log("signing...",key)
+	        return m.request({
+	            method: "GET",
+	            url: "_ah/api/myApi/v1/addsign/"+key+"/"+'?access_token='+encodeURIComponent(Petition.ID)
+	        })
+	        .then(function(result) {
+	        	console.log("got:",result)
+	        	Petition.loadList()
+	        	Petition.loadListOwner(Petition.ID)
+	        })
+	    },
+	}
+
+var ListPetitionView = {
+  oninit: Petition.loadList,
+  view: function() {
+   	return m('div', [
+	  m('div',{class:'subtitle'},"Top 10 Petition"),
+	  m('table', {class:'table is-striped'},[
+	    m('tr', [
+	      m('th', {width:"200px"}, "body"),
+	      //m('th', {width:"200px"}, "owner"),
+	      //m('th', {width:"50px"}, "signatory"),
+	      m('th', {width:"50px"}, "nbSignatory"),
+	      m('th', {width:"30px"}, "sign?"),
+	    ]),
+	    Petition.listtop100.map(function(item) {
+	      return m("tr", [
+  	        m('td', m('label', item.properties.body)),
+	        //m('td', m('label', item.properties.owner)),
+	        //m('td', m('label', item.properties.signatory)),
+	        m('td', m('label', item.properties.nbSignatory)),
+	        m('button',{
+				class: 'button is-link',
+				onclick: function(e) {Petition.sign(item.key.name,Petition.ID)}},"sign"), ///voir exemple dans post.html
+	      ])
+	    })
+	   ])
+	 ])
+  }
+}
+var OwnerListPetitionView = {
+		  oninit: Petition.loadListOwner(Petition.ID),
+		  view: function() {
+		   	return m('div', [
+			  m('div',{class:'subtitle'},"Petition signée par vous"),
+			  m('table', {class:'table is-striped'},[
+			    m('tr', [
+			      m('th', {width:"200px"}, "body"),
+			      //m('th', {width:"200px"}, "owner"),
+			      //m('th', {width:"50px"}, "signatory"),
+			      m('th', {width:"50px"}, "nbSignatory"),
+			      m('th', {width:"30px"}, "sign?"),
+			    ]),
+			    Petition.listowner.map(function(item) {
+			      return m("tr", [
+		  	        m('td', m('label', item.properties.body)),
+			        //m('td', m('label', item.properties.owner)),
+			        //m('td', m('label', item.key.name)),
+			        m('td', m('label', item.properties.nbSignatory)),
+			        m('button',{
+						class: 'button is-link',
+						onclick: function(e) {
+							Petition.sign(item.key.name,Petition.ID)}},"sign"), ///voir exemple dans post.html
+			      ])
+			    })
+			   ])
+			 ])
+		  }
+		}
+
+var Container = {
+   view: function() {
+   	return m('div', {class:'container'}, [
+           m("h1", {class: 'title'}, 'TinyPet'),
+           m('div',{class: 'tile is-ancestor'},[
+               m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(NewPetitionView))),
+               m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(ListPetitionView))),
+               m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(OwnerListPetitionView))),
+           ])
+       ])
+   }
+}
+function onSignIn(googleUser) {
+	  var petition = googleUser.getBasicProfile();
+	  Petition.ID = googleUser.getAuthResponse().id_token;
+	  m.route.set("/secret")
+	}
+
+var Login = {
+		  view: function() {
+		 	return m('div', {class:'container'}, [
+		      m("h1", {class: 'title'}, 'Tiny pet app'),
+		      m("div", {
+		      	   "class":"g-signin2",
+		      	   "data-onsuccess": "onSignIn"}),
+		      ])
+		    }
+		}
+
+m.route(document.body, "/secret", {
+	  "/secret": { onmatch: function() {
+	            	if (Petition.ID=="") {m.route.set("/login")}
+	            	else return Container
+	        		}},
+	  "/login": Login
+	})
+	
+//m.mount(document.body, Container)	
+</script>
+</body>
+</html>
