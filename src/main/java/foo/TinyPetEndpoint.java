@@ -1,5 +1,6 @@
 package foo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -80,10 +81,10 @@ public class TinyPetEndpoint {
 		//mettre à jours une entité
 		Key lkey = KeyFactory.createKey("Petition", pm.body);
 		Entity ent = new Entity("Petition","hello");
+		Transaction txn=datastore.beginTransaction();
 		try {
 			ent = datastore.get(lkey);
 			int nb =  Integer.parseInt(ent.getProperty("nbSignatory").toString());
-		    System.out.println("après get");
 		    @SuppressWarnings("unchecked") // Cast can't verify generic type.
 		    ArrayList<String> signatories = (ArrayList<String>) ent.getProperty("signatory");
 		    
@@ -93,9 +94,16 @@ public class TinyPetEndpoint {
 			    ent.setProperty("nbSignatory", nb + 1 );
 		    }
 			datastore.put(ent);
+			txn.commit();
 			return ent;
 		} catch (EntityNotFoundException e) {
-		// This should never happen
+				// This should never happen
+				e.printStackTrace();
+			}
+		  finally {
+			if (txn.isActive()) {
+			    txn.rollback();
+			  }
 		}
 		return ent;
 	}
@@ -125,9 +133,7 @@ public class TinyPetEndpoint {
 		e.setProperty("tag", fset2);
 				
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Transaction txn = datastore.beginTransaction();
 		datastore.put(e);
-		txn.commit();
 		return e;
 	}
 	

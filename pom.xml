@@ -42,7 +42,7 @@
 
     <checkstyle.skip>true</checkstyle.skip>
     
-    <endpoints.project.id>sobike44</endpoints.project.id>
+    <endpoints.project.id>lucas_douillard</endpoints.project.id>
   </properties>
 
   <dependencies>

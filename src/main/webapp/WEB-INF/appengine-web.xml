@@ -18,7 +18,7 @@
 <!-- [START env_variables] -->
     <env-variables>
 <!--         <env-var name="ENDPOINTS_SERVICE_NAME" value="${endpoints.project.id}.appspot.com" /> -->
-        <env-var name="ENDPOINTS_SERVICE_NAME" value="sobike44.appspot.com" />
+        <env-var name="ENDPOINTS_SERVICE_NAME" value="dogwood-abacus-300711.appspot.com" />
 
     </env-variables>
     <!-- [END env_variables] -->
