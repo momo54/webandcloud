@@ -42,7 +42,7 @@
 
     <checkstyle.skip>true</checkstyle.skip>
     
-    <endpoints.project.id>lucas_douillard</endpoints.project.id>
+    <endpoints.project.id>dogwood-abacus-300711</endpoints.project.id>
   </properties>
 
   <dependencies>

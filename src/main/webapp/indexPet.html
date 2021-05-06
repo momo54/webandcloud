@@ -9,6 +9,9 @@
 	
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
 	<style>
+		.title{
+			color: rgb(236, 44, 34);
+		}
 		ul {
 		  list-style-type: none;
 		  margin: 0;
@@ -29,10 +32,34 @@
 		  text-decoration: none;
 		}
 		
-		/* Change the link color to #111 (black) on hover */
 		li div:hover {
-		  background-color: #d3d3d3;
+		  /*background-color: #d3d3d3;*/
+		  color: rgb(236, 44, 34);
 		  cursor : pointer;
+		}
+		
+		#tags div{
+			float: left;
+			margin-right: 1%;
+			display: block;
+		}
+		
+		#tags{
+			margin-top:1%;
+			margin-bottom:1%;
+		}
+		
+		.tag_subject{
+			background-color: #d3d3d3;
+			cursor : pointer;
+			border-radius : 7%;
+		}
+		.actif{
+			background-color: rgb(236, 44, 34);
+			color : #fefee2;
+		}
+		.button{
+			/*background-color: rgb(236, 44, 34);*/
 		}
 	</style>
 	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
@@ -41,32 +68,70 @@
 	<script src="https://unpkg.com/mithril/mithril.js"></script>
 	<meta name="google-signin-scope" content="profile email">
 	<meta name="google-signin-client_id" content="666941423950-75griipv5tc10il429v8hv8k17g5vbgp.apps.googleusercontent.com">
-	<script src="https://apis.google.com/js/platform.js" async defer></script>
+	<script src="https://apis.google.com/js/platform.js"></script>
 </head>
 <body>
 <script>	
 
 var CreatePetition={
-  body : '',
+  body : 'titre',
   owner : '01523448',
   User : 'max',
-  tags : [],
+  tag : 'autre',
  }
  
 var Petition = {
 		ID:"",
 		nextToken:"",
+		nextTokenMy:"",
 	    listtop100: [],
 	    listowner: [],
+	    filtre:"tous", // Avant "#tous", mais problème avec un # dans l'url donc "tous"
 	    loadList: function() {
-	        return m.request({
+	        /*return m.request({
 	            method: "GET",
-	            url: "_ah/api/myApi/v1/toppetition/"
+	            url: "_ah/api/myApi/v1/toppetition/"+ Petition.filtre
 	        })
 	        .then(function(result) {
 	            Petition.listtop100 = result.items
 	        	console.log("got:",result.items)
-	        })
+	        })*/
+	        return m.request({
+	            method: "GET",
+	            url: "_ah/api/myApi/v1/toppetition/"+Petition.filtre+'?access_token='+ encodeURIComponent(Petition.ID)}) //?next="+Petition.nextToken})
+	        .then(function(result) {
+	        	console.log("got:",result)
+	        	Petition.listtop100= result.items
+	            if ('nextPageToken' in result) {
+		        	Petition.nextToken= result.nextPageToken
+	            } else {
+	            	Petition.nextToken=""
+	            }})
+	    },
+	    nextPetition: function() {
+	        return m.request({
+	            method: "GET",
+	            url: "_ah/api/myApi/v1/toppetition/"+Petition.filtre,
+	            params: {
+	          	  'next':Petition.nextToken,
+	          	  'access_token': encodeURIComponent(Petition.ID)
+	            }
+	        	})
+	        .then(function(result) {
+	        	console.log("got:",result)
+	        	if(result.items != null){
+		        	result.items.map(function(item){Petition.listtop100.push(item)})
+		            if ('nextPageToken' in result) {
+			        	Petition.nextToken= result.nextPageToken
+		            } else {
+		            	Petition.nextToken=""
+		            }
+		          }
+	        	else{
+		        	alert("Plus de pétition à afficher");
+	        	}
+	        	}
+	        )
 	    },
 	    loadListOwner: function() {
 	        return m.request({
@@ -74,13 +139,42 @@ var Petition = {
 	            url: "_ah/api/myApi/v1/MyPetition/"+'?access_token='+ encodeURIComponent(Petition.ID)
 	        })
 	        .then(function(result) {
-	            Petition.listowner = result.items
-	        	console.log("got:",result.items)
-	        })
+	        	console.log("got:",result)
+	        	Petition.listowner= result.items
+	            if ('nextPageToken' in result) {
+		        	Petition.nextTokenMy= result.nextPageToken
+	            } else {
+	            	Petition.nextTokenMy=""
+	            }})
 	    },
-	    save: function(body) {
-	    	console.log("saving...",Petition.current)
-	    	var data={'body':body}
+	    nextMyPetition: function() {
+	        return m.request({
+	            method: "GET",
+	            url: "_ah/api/myApi/v1/MyPetition/",
+	            params: {
+	          	  'next':Petition.nextTokenMy,
+	          	  'access_token': encodeURIComponent(Petition.ID)
+	            }
+	        	})
+	        .then(function(result) {
+	        	console.log("got:",result)
+	        	if(result.items != null){
+		        	result.items.map(function(item){Petition.listowner.push(item)})
+		            if ('nextPageToken' in result) {
+			        	Petition.nextTokenMy= result.nextPageToken
+		            } else {
+		            	Petition.nextTokenMy=""
+		            }
+		          }
+	        	else{
+		        	alert("Plus de pétition à afficher");
+	        	}
+	        	}
+	        )
+	    },
+	    save: function() {
+	    	console.log("saving...",typeof Object.values(CreatePetition.tag))
+	    	var data={'body':CreatePetition.body, 'tag':CreatePetition.tag}
 	        return m.request({
 	            method: "POST",
 	            url: "_ah/api/myApi/v1/createPetition"+'?access_token='+encodeURIComponent(Petition.ID),
@@ -88,14 +182,13 @@ var Petition = {
 	        })
 	        .then(function(result) {
 	        	console.log("got:",result)
-	        	Petition.loadList()
 	        	alert("Pétition créée...");
 	        	m.route.set("/home")
 	        })
 	    },
 	    sign: function(key) {
 	    	console.log("signing...",key)
-	    	var data={'body': key}
+	    	var data={'key': key}
 	        return m.request({
 	            method: "POST",
 	            url: "_ah/api/myApi/v1/signPetition"+'?access_token='+encodeURIComponent(Petition.ID),
@@ -116,13 +209,18 @@ var navbar={
 						m("ul",{},
 							m("li",{},
 							m("h1", {class: 'title'}, 'TinyPet')),
-							m("li",{},m('div',{onclick: function(e) {m.route.set("/home")}},"Accueil")),
-							m("li",{},m('div',{onclick: function(e) {m.route.set("/new")}},"Créer une pétition")),
+							m("li",{},m('div',{onclick: function(e) {m.route.set("/new")}},"Lancer une pétition")),
 							m("li",{},m('div',{
 								onclick: function(e) {
-									Petition.loadListOwner(Petition.ID),
+									Petition.loadListOwner(),
 								  	m.route.set("/myPet")}}
-									,"Visualiser vos pétitions")),
+									,"Mes pétitions")),
+							m("li",{},m('div',{
+								onclick: function(e) {
+									Petition.loadList(),
+									m.route.set("/home")
+								}},
+								"Parcourir les pétitions")),
 							m("li",{},m('div',{
 								onclick: function(e) {
 									gapi.auth2.getAuthInstance().signOut().then(function () {
@@ -139,54 +237,64 @@ var navbar={
 
 var NouvellePetitionView={
 	view: function() {
-		return m('div', [
-	   		   m("div", {},m(navbar)),
-			m('div',{class:'subtitle'},"Créer une pétition"),
-			m("input[type=text][placeholder=Nom]", {
-				class: 'input is-rounded',
-				 oninput: function (e) {
-					 CreatePetition.body=e.target.value},
-				 }),
-			m("fieldset",{},
-				m("legend",{},"Selectionnez les tags relatifs à votre pétition :"),
-				m("input[type=checkbox]", {
-					id:"nature",
-					value:"#nature",
-					onchange: function (e) {
-						if (e.checked) {
-							  CreatePetition.tags.push(e.target.value),
-							  console.log("add",e.target.value)
-							  }
-						else {
-							CreatePetition.tags.splice(CreatePetition.tags.indexOf(e.target.value), 1),
-							console.log("remove",e.target.value)
-						}
-					},
-				}),
-				m("label",{for:"nature"},"#nature"),
-				m("input[type=checkbox]", {
-					id:"sociale",
-					value:"#sociale",
-					onchange: function (e) {
-						  if (document.getElementById(social).checked) {
-							  CreatePetition.tags.push(e.target.value),
-							  console.log("add ",e.target.value)
-							  } else {
-								 CreatePetition.tags.splice(CreatePetition.tags.indexOf(e.target.value), 1),
-								 console.log("remove",e.target.value)
-							  }
-					},
-				}),
-				m("label",{for:"social"},"#social"),
-			),
-			m('button',{
-				class: 'button is-link',
-				onclick: function(e) {Petition.save(CreatePetition.body,Petition.ID)}
-			    },"Submit"),
+		 return m('div', [
+	   		  	m("div", {},m(navbar)),
+	   			m('div',{class: 'tile is-ancestor'},[
+		   	        m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},
+					m('div',{class:'subtitle'},"Créer une pétition"),
+					m("label",{for:"name"},"Nom de la pétition :"),
+					m("input[type=text][placeholder=Nom]", {
+						class: 'input is-rounded',
+						id: 'name',
+						 oninput: function (e) {
+							 CreatePetition.body=e.target.value},
+						 }),
+					m("div",{id:"tags"},
+						m("h2","Selectionnez les tags relatifs à votre pétition :"),
+							m("div",{
+								id:"nature_div",
+								class:"tag_subject",
+								onclick: function (e) {
+									CreatePetition.tag = "nature",
+									document.getElementById('nature_div').classList.add("actif");
+									document.getElementById('sociale_div').classList.remove("actif");
+									document.getElementById('autre_div').classList.remove("actif");
+									console.log("add","nature")
+									},
+								},"#Nature"),
+								m("div",{
+									id:"sociale_div",
+									class:"tag_subject",
+									onclick: function (e) {
+										CreatePetition.tag = "sociale",
+										document.getElementById('sociale_div').classList.add("actif");
+										document.getElementById('nature_div').classList.remove("actif");
+										document.getElementById('autre_div').classList.remove("actif");
+										console.log("add","sociale")
+										},
+									},"#Sociale"),
+								m("div",{
+									id:"autre_div",
+									class:"tag_subject actif",
+									onclick: function (e) {
+										CreatePetition.tag = "autre",
+										document.getElementById('autre_div').classList.add("actif");
+										document.getElementById('nature_div').classList.remove("actif");
+										document.getElementById('sociale_div').classList.remove("actif");
+										console.log("add","autre")
+										},
+									},"#Autre"),
+					),
+					m('br'),
+					m('button',{
+						class: 'button',
+						onclick: function(e) {Petition.save()}
+					    },"Submit"),
+					    ))
+					])
 		])
 	}	
 }
-
 
 var Top100PetitionListView = {
   oninit: Petition.loadList,
@@ -196,6 +304,62 @@ var Top100PetitionListView = {
 		m('div',{class: 'tile is-ancestor'},[
             m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},
 			  	m('div',{class:'subtitle'},"Top 100 des Pétitions"),
+			  	m("div",{id:"tags"},
+						m("h2","Selectionnez un tag relatif à votre pétition :"),
+							m("div",{
+								id:"tous_div",
+								class:"tag_subject actif",
+								onclick: function (e) {
+									Petition.filtre = "tous",
+									document.getElementById('tous_div').classList.add("actif");
+									document.getElementById('nature_div').classList.remove("actif");
+									document.getElementById('sociale_div').classList.remove("actif");
+									document.getElementById('autre_div').classList.remove("actif");
+						        	Petition.loadList();
+									console.log("add","tous")
+									},
+								},"#Tous"),
+							m("div",{
+								id:"nature_div",
+								class:"tag_subject",
+								onclick: function (e) {
+									Petition.filtre = "nature",
+									document.getElementById('nature_div').classList.add("actif");
+									document.getElementById('sociale_div').classList.remove("actif");
+									document.getElementById('autre_div').classList.remove("actif");
+									document.getElementById('tous_div').classList.remove("actif");
+						        	Petition.loadList();
+									console.log("add","nature")
+									},
+								},"#Nature"),
+								m("div",{
+									id:"sociale_div",
+									class:"tag_subject",
+									onclick: function (e) {
+										Petition.filtre = "sociale",
+										document.getElementById('sociale_div').classList.add("actif");
+										document.getElementById('nature_div').classList.remove("actif");
+										document.getElementById('autre_div').classList.remove("actif");
+										document.getElementById('tous_div').classList.remove("actif");
+							        	Petition.loadList();
+										console.log("add","sociale")
+										},
+									},"#Sociale"),
+								m("div",{
+									id:"autre_div",
+									class:"tag_subject",
+									onclick: function (e) {
+										Petition.filtre = "autre",
+										document.getElementById('autre_div').classList.add("actif");
+										document.getElementById('nature_div').classList.remove("actif");
+										document.getElementById('sociale_div').classList.remove("actif");
+										document.getElementById('tous_div').classList.remove("actif");
+							        	Petition.loadList();
+										console.log("add","autre")
+										},
+									},"#Autre"),
+					),
+				m("br"),
 			  	m('table', {class:'table is-striped'},[
 			    m('tr', [
 			      m('th', {width:"10%"}, "Titre"),
@@ -208,15 +372,21 @@ var Top100PetitionListView = {
 			        m('td', m('label', item.properties.nbSignatory)),
 			        m('button',{
 						class: 'button is-link',
-						onclick: function(e) {Petition.sign(item.key.name,Petition.ID)}},"Signer"),
+						onclick: function(e) {Petition.sign(item.key.name)}},"Signer"),
 			      ])
 			    })
-			   ])
+			   ]),
+			   m('button',{
+				      class: 'button is-link',
+				      onclick: function(e) {Petition.nextPetition()}
+				      },
+				  "Suivantes"),
 			))
 		])
 	 ])
   }
 }
+
 var UserPetitionListView = {
 		  view: function() {
 		   	return m('div', [
@@ -235,26 +405,18 @@ var UserPetitionListView = {
 						        m('td', m('label', item.properties.nbSignatory)),
 						      ])
 						    })
-						   ]))
+						   ]),
+						   m('button',{
+							      class: 'button is-link',
+							      onclick: function(e) {Petition.nextMyPetition()}
+							      },
+							  "Suivantes"),
+		               )
 			 		  )
 		  		]),
 		  	])
 		  }
 		}
-
-/*var Container = {
-   view: function() {
-   	return m('div', {class:'container'}, [
-   		   m("div", {},m(navbar)),
-           m("h1", {class: 'title'}, 'TinyPet'),
-           m('div',{class: 'tile is-ancestor'},[
-               //m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(NouvellePetitionView))),
-               m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(Top100PetitionListView))),
-               //m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(UserPetitionListView))),
-           ])
-       ])
-   }
-}*/
 
 function onSignIn(googleUser) {
 	  var petition = googleUser.getBasicProfile();
@@ -265,7 +427,7 @@ function onSignIn(googleUser) {
 var Login = {
 		  view: function() {
 		 	return m('div', {class:'container'}, [
-		      m("h1", {class: 'title'}, 'Tiny pet app'),
+		      m("h1", {class: 'title'}, 'TinyPet'),
 		      m("div", {
 		      	   "class":"g-signin2",
 		      	   "data-onsuccess": "onSignIn"}),
@@ -273,7 +435,7 @@ var Login = {
 		    }
 		}
 
-m.route(document.body, "/login", {
+m.route(document.body, "/home", {
 	  "/home" : { onmatch: function(){
 		  if (Petition.ID=="") {m.route.set("/login")}
       	  else return Top100PetitionListView
@@ -289,7 +451,6 @@ m.route(document.body, "/login", {
 	  "/login": Login
 	})
 	
-//m.mount(document.body, Container)	
 </script>
 </body>
 </html>

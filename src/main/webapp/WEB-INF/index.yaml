@@ -1,6 +1,6 @@
 indexes:
-- kind: Friend 
+- kind: Petition 
   properties: 
-    - name: friends 
-    - name: age 
-    
+    - name: body 
+    - name: nbSignatory
+    - name: tags
