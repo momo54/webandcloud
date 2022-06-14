@@ -2,6 +2,7 @@ package foo;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -38,15 +39,41 @@ public class PetitionServlet extends HttpServlet {
 		Random r = new Random();
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-		// Create users
-		for (int i = 0; i < 50; i++) {
-			for (int j = 0; j < 10; j++) {
-				Entity e = new Entity("PU", "P" + i + "_" + "U"+j);
-				e.setProperty("firstName", "My name is" + j);
-				e.setProperty("body", "Vote for my"+i+","+j);
-				datastore.put(e);
-				response.getWriter().print("<li> created post:" + e.getKey() + "<br>");
+		// Create petition
+		for (int i = 0; i < 500; i++) {
+			Entity e = new Entity("Petition", "P" + i );
+			int owner=r.nextInt(1000);
+			e.setProperty("Owner", "U"+ owner);
+			e.setProperty("Date", new Date());
+			e.setProperty("Body", "bla bla bla");
+			
+			// Create random votants
+			HashSet<String> fset = new HashSet<String>();
+			for (int j=0;j<200;j++) {
+				fset.add("U" + r.nextInt(1000));
 			}
+			e.setProperty("votants", fset);
+			e.setProperty("nbvotants", fset.size());
+			
+			// Create random tags
+			HashSet<String> ftags = new HashSet<String>();
+			while (ftags.size() < 10) {
+				ftags.add("T" + r.nextInt(100));
+			}
+			e.setProperty("tags", ftags);
+			
+			datastore.put(e);
+			response.getWriter().print("<li> created post:" + e.getKey() + "<br>");
+
+		}
+		Entity e = new Entity("Petition", "P0");
+		try {
+			Entity f=datastore.get(e.getKey());
+			HashSet<String> al=(HashSet<String>) f.getProperty("votants");
+			System.out.println("myarray:"+al);
+		} catch (EntityNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
 }

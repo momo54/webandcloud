@@ -13,11 +13,11 @@ import javax.servlet.http.HttpServletResponse;
     urlPatterns = {"/hello"}
 )
 public class HelloAppEngine extends HttpServlet {
-	int i=0;
+	int i=0,l=0;
 	static int j=0;
 	
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) 
+  synchronized public void doGet(HttpServletRequest request, HttpServletResponse response) 
       throws IOException {
 
     response.setContentType("text/plain");
@@ -28,7 +28,11 @@ public class HelloAppEngine extends HttpServlet {
     response.getWriter().println("ip:"+Inet4Address.getLocalHost().getHostName());
     response.getWriter().println("y:"+Thread.currentThread());
     response.getWriter().println("i:"+i++);
+    
+    for (int k=0;k<1000000000;k++) {
+    	l=l+1;
+    }
     response.getWriter().println("j:"+j++);
-
+    response.getWriter().println("l:"+l);
   }
 }
