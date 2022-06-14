@@ -28,6 +28,16 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
 
+//Exception in thread "Thread-18" java.lang.IllegalArgumentException: cross-group transaction need to be explicitly specified, see TransactionOptions.Builder.withXGfound both Element {
+//	  type: "Reg"
+//	  name: "x"
+//	}
+//	 and Element {
+//	  type: "Reg"
+//	  name: "y"
+//	}
+
+
 @WebServlet(name = "CountingTR", urlPatterns = { "/counttr" })
 public class CountingTR extends HttpServlet {
 	public static int j =5;

@@ -29,6 +29,16 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.TransactionOptions;
 
+//Exception in thread "Thread-18" java.lang.IllegalArgumentException: cross-group transaction need to be explicitly specified, see TransactionOptions.Builder.withXGfound both Element {
+//	  type: "Reg"
+//	  name: "x"
+//	}
+//	 and Element {
+//	  type: "Reg"
+//	  name: "y"
+//	}
+
+
 @WebServlet(name = "OneTupleTR", urlPatterns = { "/onetuple" })
 public class OneTupleTR extends HttpServlet {
 	public static int j =5;
@@ -60,6 +70,8 @@ public class OneTupleTR extends HttpServlet {
 			th[i]=ThreadManager.createThreadForCurrentRequest(new Runnable()  {
 				public void run() {
 					DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+					// Cross Group transaction
+					// without -> exception Cross Group TR
 					TransactionOptions options = TransactionOptions.Builder.withXG(true);
 					Transaction txn=ds.beginTransaction(options);
 					try {
