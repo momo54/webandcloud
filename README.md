@@ -1,4 +1,13 @@
-# webandcloud
+# fast install
+
+* precondition: you have a GCP project selected with billing activated. 
+* go to GCP console and open a cloud shell
+* git clone https://github.com/momo54/webandcloud.git
+* cd webandcloud
+* mvn appengine:deploy (to deploy)
+* mvn appengine:run (to debug in dev server)
+
+# webandcloud from the lab
 
 **Be sure your maven has access to the web**
 * you should have file ~/.m2/settings.xml
