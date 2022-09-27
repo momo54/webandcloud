@@ -1,0 +1,37 @@
+<html lang="en">
+  <body>
+    <script src="https://unpkg.com/jwt-decode/build/jwt-decode.js"></script>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <div id="g_id_onload"
+         data-client_id="927375242383-jm45ei76rdsfv7tmjv58tcsjjpvgkdje.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse">
+    </div>
+    <div class="g_id_signin" data-type="standard"></div>
+
+    <p id="toto"></p> 
+
+    <script>
+    function handleCredentialResponse(response) {
+        console.log("callback called:"+response.credential)
+        // decodeJwtResponse() is a custom function defined by you
+        // to decode the credential response.
+        const responsePayload = jwt_decode(response.credential);
+   
+        console.log("ID: " + responsePayload.sub);
+        console.log('Full Name: ' + responsePayload.name);
+        console.log('Given Name: ' + responsePayload.given_name);
+        console.log('Family Name: ' + responsePayload.family_name);
+        console.log("Image URL: " + responsePayload.picture);
+        console.log("Email: " + responsePayload.email);
+
+
+        const url = "_ah/api/myApi/v1/Hello"+'?access_token=' + response.credential
+        fetch(url).then(response => response.text()).then(data => document.getElementById('toto').innerHTML = data)
+
+     }
+    </script>
+    
+
+  </body>
+</html>
