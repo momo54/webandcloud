@@ -39,7 +39,8 @@ import com.google.appengine.api.datastore.Transaction;
 @Api(name = "myApi",
      version = "v1",
      audiences = "927375242383-t21v9ml38tkh2pr30m4hqiflkl3jfohl.apps.googleusercontent.com",
-  	 clientIds = "927375242383-t21v9ml38tkh2pr30m4hqiflkl3jfohl.apps.googleusercontent.com",
+  	 clientIds = {"927375242383-t21v9ml38tkh2pr30m4hqiflkl3jfohl.apps.googleusercontent.com",
+        "927375242383-jm45ei76rdsfv7tmjv58tcsjjpvgkdje.apps.googleusercontent.com"},
      namespace =
      @ApiNamespace(
 		   ownerDomain = "helloworld.example.com",
@@ -49,12 +50,24 @@ import com.google.appengine.api.datastore.Transaction;
 
 public class ScoreEndpoint {
 
+
 	Random r = new Random();
 
+    // remember: return Primitives and enums are not allowed. 
 	@ApiMethod(name = "getRandom", httpMethod = HttpMethod.GET)
 	public RandomResult random() {
 		return new RandomResult(r.nextInt(6) + 1);
 	}
+
+	@ApiMethod(name = "hello", httpMethod = HttpMethod.GET)
+	public User Hello(User user) throws UnauthorizedException {
+        if (user == null) {
+			throw new UnauthorizedException("Invalid credentials");
+		}
+        System.out.println("Yeah:"+user.toString());
+		return user;
+	}
+
 
 	@ApiMethod(name = "scores", httpMethod = HttpMethod.GET)
 	public List<Entity> scores() {
