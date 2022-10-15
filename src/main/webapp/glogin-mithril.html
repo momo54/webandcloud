@@ -1,10 +1,12 @@
 <html lang="en">
 <head>
-<meta name="google-signin-scope" content="profile email">
+
+<!--...
+    <meta name="google-signin-scope" content="profile email">
 <meta name="google-signin-client_id"
 	content="927375242383-t21v9ml38tkh2pr30m4hqiflkl3jfohl.apps.googleusercontent.com">
 <script src="https://apis.google.com/js/platform.js" async defer></script>
-
+-->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,6 +17,9 @@
 <script defer
 	src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
+<script src="https://unpkg.com/jwt-decode/build/jwt-decode.js"></script>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <script src="https://unpkg.com/mithril/mithril.js"></script>
 
@@ -22,7 +27,8 @@
 </head>
 <body>
 	<script>
-	
+
+
 var Profile={
   name:"",
   email:"",
@@ -133,15 +139,41 @@ function onSignIn(googleUser) {
   Profile.url=profile.getImageUrl();
   m.route.set("/secret")
 }
-		
+
+function handleCredentialResponse(response) {
+    console.log("callback called:"+response.credential)
+    // decodeJwtResponse() is a custom function defined by you
+    // to decode the credential response.
+    const responsePayload = jwt_decode(response.credential);
+   
+    console.log("ID: " + responsePayload.sub);
+    console.log('Full Name: ' + responsePayload.name);
+    console.log('Given Name: ' + responsePayload.given_name);
+    console.log('Family Name: ' + responsePayload.family_name);
+    console.log("Image URL: " + responsePayload.picture);
+    console.log("Email: " + responsePayload.email);
+
+    Profile.name= responsePayload.name
+    Profile.email= responsePayload.email
+    Profile.ID=response.credential
+    Profile.url= responsePayload.picture 
+       // const url = "_ah/api/myApi/v1/Hello"+'?access_token=' + response.credential
+       // fetch(url).then(response => response.text()).then(data => document.getElementById('toto').innerHTML = data)
+    m.route.set("/secret")
+}
+
+
 var Login = {
   view: function() {
  	return m('div', {class:'container'}, [
       m("h1", {class: 'title'}, 'The TinyGram Post'),
       m("div", {
-      	   "class":"g-signin2",
-      	   "data-theme":"dark",
-      	   "data-onsuccess": "onSignIn"}),
+      	   "id":"g_id_onload",
+      	   "data-client_id":"927375242383-jm45ei76rdsfv7tmjv58tcsjjpvgkdje.apps.googleusercontent.com",
+           "data-callback":"handleCredentialResponse"}),
+      m("div", {
+      	   "class":"g_id_signin",
+      	   "data-type":"standard"}),
       ])
     }
 }
