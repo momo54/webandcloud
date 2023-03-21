@@ -39,21 +39,17 @@ public class PetitionServlet extends HttpServlet {
 		Random r = new Random();
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
+        Entity[] plist=new Entity[100];
+        Entity[] ulist=new Entity[500];
+
 		// Create petition
-		for (int i = 0; i < 500; i++) {
-			Entity e = new Entity("Petition", "P" + i );
-			int owner=r.nextInt(1000);
+		for (int i = 0; i < plist.length; i++) {
+			Entity e = new Entity("D2Petition", "P" + i );
+			int owner=r.nextInt(ulist.length);
 			e.setProperty("Owner", "U"+ owner);
 			e.setProperty("Date", new Date());
-			e.setProperty("Body", "bla bla bla");
-			
-			// Create random votants
-			HashSet<String> fset = new HashSet<String>();
-			for (int j=0;j<200;j++) {
-				fset.add("U" + r.nextInt(1000));
-			}
-			e.setProperty("votants", fset);
-			e.setProperty("nbvotants", fset.size());
+			e.setProperty("Body", "bla bla bla");			
+			e.setProperty("nb", 0);
 			
 			// Create random tags
 			HashSet<String> ftags = new HashSet<String>();
@@ -62,18 +58,29 @@ public class PetitionServlet extends HttpServlet {
 			}
 			e.setProperty("tags", ftags);
 			
-			datastore.put(e);
+            plist[i]=e;
 			response.getWriter().print("<li> created post:" + e.getKey() + "<br>");
+		}
+        // Create users
+		for (int i = 0; i < ulist.length; i++) {
+			Entity e = new Entity("D2User", "U" + i );
+            e.setProperty("name", "U"+i);
 
-		}
-		Entity e = new Entity("Petition", "P0");
-		try {
-			Entity f=datastore.get(e.getKey());
-			HashSet<String> al=(HashSet<String>) f.getProperty("votants");
-			System.out.println("myarray:"+al);
-		} catch (EntityNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+            // Sign Random Petition
+			HashSet<String> pets = new HashSet<String>();
+			while (pets.size() < 5) {
+                int rpet=r.nextInt(plist.length);
+				pets.add("P" + rpet);
+                plist[rpet].setProperty("nb", (int)plist[rpet].getProperty("nb")+1);
+			}
+            e.setProperty("signed", pets);
+
+            ulist[i]=e;
+            datastore.put(e);
+            response.getWriter().print("<li> created user:" + e.getKey() + "<br>");
+        }
+        for (int i=0;i<plist.length;i++) {
+            datastore.put(plist[i]);
+        }
 	}
 }

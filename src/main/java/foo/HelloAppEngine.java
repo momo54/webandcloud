@@ -23,7 +23,7 @@ public class HelloAppEngine extends HttpServlet {
     response.setContentType("text/plain");
     response.setCharacterEncoding("UTF-8");
 
-    response.getWriter().print("Hello App Engine!\r\n");
+    response.getWriter().print("Hello App Enginev 20 janvier !\r\n");
     response.getWriter().println("x:"+this.hashCode());
     response.getWriter().println("ip:"+Inet4Address.getLocalHost().getHostName());
     response.getWriter().println("y:"+Thread.currentThread());

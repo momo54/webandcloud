@@ -13,6 +13,10 @@
 
 <script src="https://unpkg.com/mithril/mithril.js"></script>
 
+<script src="https://unpkg.com/jwt-decode/build/jwt-decode.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+   
+
 </head>
 <body>
 
@@ -112,11 +116,60 @@ var ScoreView = {
   }
 }
 
+var Login = {
+    id: "",
+    full: "",
+    given:"",
+    family:"",
+    image:"",
+    email:"",
+
+    handleCredential: function(response) {
+        const responsePayload = jwt_decode(response.credential);
+        Login.id= responsePayload.sub;
+        Login.full=responsePayload.name;
+        Login.given=responsePayload.given_name;
+        console.log("ID: " + responsePayload.sub);
+        console.log('Full Name: ' + responsePayload.name);
+        console.log('Given Name: ' + responsePayload.given_name);
+        console.log('Family Name: ' + responsePayload.family_name);
+        console.log("Image URL: " + responsePayload.picture);
+        console.log("Email: " + responsePayload.email);
+
+    }
+
+}
+
+var LoginView = {
+  view: function() {
+   	return m('div', [
+	  m('div',{class:'subtitle'},"Login"),
+	  m('div', {
+        "id":"g_id_onload",
+        "data-client_id":"927375242383-jm45ei76rdsfv7tmjv58tcsjjpvgkdje.apps.googleusercontent.com",
+        "data-callback":"handleCredentialResponse"
+      }),
+      m('div', {
+        class:"g_id_signin","data-type":"standard"
+      }),
+	   ])
+  }
+}
+
+function handleCredentialResponse(response) {
+        console.log("callback called:"+response.credential)
+        // decodeJwtResponse() is a custom function defined by you
+        // to decode the credential response.
+        Login.handleCredential(response)
+   
+}
+
 var Hello = {
    view: function() {
    	return m('div', {class:'container'}, [
            m("h1", {class: 'title'}, 'The Dice Game'),
            m('div',{class: 'tile is-ancestor'},[
+               m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(LoginView))),
                m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(DiceView))),
                m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(ScoreView))),
            ])

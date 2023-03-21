@@ -3,4 +3,3 @@ indexes:
   properties: 
     - name: friends 
     - name: age 
-    
