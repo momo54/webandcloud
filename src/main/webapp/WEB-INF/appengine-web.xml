@@ -3,8 +3,8 @@
 
   <threadsafe>false</threadsafe>
   <sessions-enabled>true</sessions-enabled>
-  <runtime>java8</runtime>
-
+  <runtime>java17</runtime>
+  <app-engine-apis>true</app-engine-apis>
    <static-files>
     <include path="/**.html" >
     </include>
