@@ -6,6 +6,7 @@
 * cd webandcloud
 * mvn appengine:deploy (to deploy)
 * mvn appengine:run (to debug in dev server)
+* if you cnage indexes : gcloud app deploy src/main/webapp/WEB-INF/index.yaml 
 
 # webandcloud from the lab
 
