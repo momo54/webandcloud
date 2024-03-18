@@ -102,10 +102,13 @@ public class ScoreEndpoint {
 	}
 
 	@ApiMethod(name = "addScore", httpMethod = HttpMethod.GET)
-	public Entity addScore(@Named("score") int score, @Named("name") String name) {
+	public Entity addScore(User user,@Named("score") int score, @Named("name") String name) throws UnauthorizedException {
+		if (user == null) {
+			throw new UnauthorizedException("Invalid credentials");
+		}		
 
 		Entity e = new Entity("Score", "" + name + score);
-		e.setProperty("name", name);
+		e.setProperty("name", user.toString());
 		e.setProperty("score", score);
 
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -164,6 +167,27 @@ public class ScoreEndpoint {
 	    
 	}
     
+	@ApiMethod(name = "signedpetition", httpMethod = HttpMethod.GET)
+	public CollectionResponse<Entity> signedpetition(@Named("petid") String petid, @Nullable @Named("next") String cursorString) {
+
+	    Query q = new Query("D2User").setFilter(new FilterPredicate("signed", FilterOperator.EQUAL, petid));
+	    
+	    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+	    PreparedQuery pq = datastore.prepare(q);
+	    
+	    FetchOptions fetchOptions = FetchOptions.Builder.withLimit(2);
+	    
+	    if (cursorString != null) {
+			fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));
+		}
+	    
+	    QueryResultList<Entity> results = pq.asQueryResultList(fetchOptions);
+	    cursorString = results.getCursor().toWebSafeString();
+	    
+	    return CollectionResponse.<Entity>builder().setItems(results).setNextPageToken(cursorString).build();
+	}
+    
+
 	@ApiMethod(name = "getPost",
 		   httpMethod = ApiMethod.HttpMethod.GET)
 	public CollectionResponse<Entity> getPost(User user, @Nullable @Named("next") String cursorString)

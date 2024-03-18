@@ -32,6 +32,10 @@ public class HelloAppEngine extends HttpServlet {
     for (int k=0;k<1000000000;k++) {
     	l=l+1;
     }
+
+//    int xyz=0;
+//    System.out.println("yop:"+32/xyz);
+
     response.getWriter().println("j:"+j++);
     response.getWriter().println("l:"+l);
   }

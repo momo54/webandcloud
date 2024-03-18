@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Stupid DiceGame</title>
+<title>DiceGame</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -10,12 +10,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
 <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
-
-<!-- <script src="https://unpkg.com/jwt-decode/build/jwt-decode.js"></script> -->
-<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-
-
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <script src="https://unpkg.com/mithril/mithril.js"></script>
 
@@ -65,7 +59,6 @@ var DiceView={
 			m('label',{class:'label'},"Dice 2:"+DiceGame.d2),
 			m('button',{
 				class: 'button is-link',
-                disabled: Login.name==='',
 				onclick: function(e) {DiceGame.play()}
 			    },"play"),
 		])
@@ -89,11 +82,12 @@ var Score = {
 	    	console.log("saving...",Score.current)
 	        return m.request({
 	            method: "GET",
-	            url: "_ah/api/myApi/v1/addScore/"+score+"/"+name+'?access_token=' + Login.token
+	            url: "_ah/api/myApi/v1/addScore/"+score+"/"+name
 	        })
 	        .then(function(result) {
 	        	console.log("got:",result)
 	        	Score.loadList()
+				MyScore.loadList()
 	        })
 	    }
 	}
@@ -119,75 +113,57 @@ var ScoreView = {
   }
 }
 
+var MyScore = {
+	    list: [],
+	    loadList: function() {
+	        return m.request({
+	            method: "GET",
+	            url: "_ah/api/myApi/v1/myscores/"+DiceGame.name
+	        })
+	        .then(function(result) {
+	            MyScore.list = result.items
+	        	console.log("got:",result.items)
+	        	// m.redraw(true) 
+	        })
+	    }
+	}
 
-var Login = {
-  name:"",
-  email:"",
-  ID:"",
-  url:"",
-  token:"",
-  handleCredential: function(response) {
-    console.log("callback called:"+response.credential)
-    // decodeJwtResponse() is a custom function defined by you
-    // to decode the credential response.
-    const responsePayload = jwt_decode(response.credential);
-   
-    console.log("ID: " + responsePayload.sub);
-    console.log('Full Name: ' + responsePayload.name);
-    console.log('Given Name: ' + responsePayload.given_name);
-    console.log('Family Name: ' + responsePayload.family_name);
-    console.log("Image URL: " + responsePayload.picture);
-    console.log("Email: " + responsePayload.email);
-
-    DiceGame.name= responsePayload.name
-    Login.name=responsePayload.name
-    Login.email= responsePayload.email
-    Login.ID=response.credential
-    Login.url= responsePayload.picture 
-	Login.token=response.credential
-    // external event
-    m.redraw()
-}
-
-}
-
-var LoginView = {
-    view: function() {
- 	return m('div', {class:'container'}, [
-      m("h1", {class: 'title'}, 'Login'),
-      m("div", {
-      	   "id":"g_id_onload",
-      	   "data-client_id":"927375242383-jm45ei76rdsfv7tmjv58tcsjjpvgkdje.apps.googleusercontent.com",
-           "data-callback": "handleCredentialResponse"}),
-      m("div", {
-      	   "class":"g_id_signin",
-      	   "data-type":"standard"}),
-      m("li", {class: 'content'}, "name:"+Login.name),
-      m("li", {class: 'content'}, "email:"+Login.email),
-      m("img",{"src":Login.url}),
-      ])
-    }
-
-}
-
-function handleCredentialResponse(response) {
-    console.log("callback called:"+response.credential)
-    Login.handleCredential(response)
+var MyScoreView = {
+  oninit: MyScore.loadList,
+  view: function() {
+   	return m('div', [
+	  m('div',{class:'subtitle'},"My Top 10 Scores"),
+	  m('table', {class:'table is-striped'},[
+	    m('tr', [
+	      m('th', {width:"20px"}, "Name"),
+	      m('th', {width:"50px"}, "Score"),
+	    ]),
+	    MyScore.list.map(function(item) {
+	      return m("tr", [
+  	        m('td', m('label', item.properties.name)),
+	        m('td', m('label', item.properties.score)),
+	      ])
+	    })
+	   ])
+	 ])
+  }
 }
 
 
 var Hello = {
    view: function() {
    	return m('div', {class:'container'}, [
-           m("h1", {class: 'title'}, 'The Stupid Dice Game'),
+           m("h1", {class: 'title'}, 'The Dice Game'),
            m('div',{class: 'tile is-ancestor'},[
-           m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(LoginView))),
-           m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(DiceView))),
-           m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(ScoreView))),
+               m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(DiceView))),
+               m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(ScoreView))),
+			   m("div", {class: 'tile'}, m('div',{class:'tile is-child box'},m(MyScoreView))),
            ])
        ])
    }
 }
+
+
 m.mount(document.body, Hello)	
 
 

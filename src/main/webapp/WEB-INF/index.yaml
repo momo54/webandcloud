@@ -3,3 +3,9 @@ indexes:
   properties: 
     - name: friends 
     - name: age 
+- kind: Score
+  properties:
+  - name: name
+  - name: score
+    direction: desc
+    
