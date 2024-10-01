@@ -102,7 +102,21 @@ public class ScoreEndpoint {
 	}
 
 	@ApiMethod(name = "addScore", httpMethod = HttpMethod.GET)
-	public Entity addScore(User user,@Named("score") int score, @Named("name") String name) throws UnauthorizedException {
+	public Entity addScore(@Named("score") int score, @Named("name") String name) throws UnauthorizedException {
+
+		Entity e = new Entity("Score", "" + name + score);
+		e.setProperty("name", name);
+		e.setProperty("score", score);
+
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		datastore.put(e);
+
+		return e;
+	}
+
+
+	@ApiMethod(name = "addScoreSec", httpMethod = HttpMethod.GET)
+	public Entity addScoreSec(User user,@Named("score") int score, @Named("name") String name) throws UnauthorizedException {
 		if (user == null) {
 			throw new UnauthorizedException("Invalid credentials");
 		}		
